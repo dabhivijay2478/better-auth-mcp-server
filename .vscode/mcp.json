@@ -1,0 +1,12 @@
+{
+	"servers": {
+		"betterAuth": {
+			"type": "stdio",
+			"command": "node",
+			"args": [
+				"index.js"
+			]
+		}
+	},
+	"inputs": []
+}

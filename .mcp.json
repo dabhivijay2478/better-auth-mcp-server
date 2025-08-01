@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "betterAuth": {
+      "type": "stdio",              
+      "command": "node",
+      "args": ["index.js"],          
+      "tools": ["fetch_list", "fetch_page"]   
+    }
+  }
+}
