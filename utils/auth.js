@@ -114,4 +114,5 @@ export const auth = betterAuth({
         disabled: false,
         level: process.env.NODE_ENV === 'production' ? 'error' : 'info',
     },
+    baseURL: "http://localhost:8000",
 });
