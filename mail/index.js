@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
   pool: true, // Enable connection pooling
   maxConnections: 5, // Adjust as needed
   rateLimit: 10, // Max 10 messages per second
+  name:"localhost"
 });
 
 // Optional: Verify the connection once when the app starts
