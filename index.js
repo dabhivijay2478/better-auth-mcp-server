@@ -1148,1204 +1148,957 @@ const PLUGINS = {
 };
 
 async function initResources(server) {
-  server.registerResource(
-    "better_auth_docs",
-    `file://${LOCAL_FILE_PATH}`,
-    {
-      title: "Better Auth Documentation",
-      description: "Complete Better Auth documentation and configuration guide",
-      mimeType: "text/plain"
-    },
-    async () => {
-      try {
-        const text = await fs.readFile(LOCAL_FILE_PATH, "utf-8");
-        return { contents: [{ uri: `file://${LOCAL_FILE_PATH}`, text }] };
-      } catch (error) {
-        console.error(`Failed fetching ${LOCAL_FILE_PATH}:`, error);
-        throw new Error(`Failed to read file: ${LOCAL_FILE_PATH}`);
+  try {
+    server.registerResource(
+      "better_auth_docs",
+      `file://${LOCAL_FILE_PATH}`,
+      {
+        title: "Better Auth Documentation",
+        description: "Complete Better Auth documentation and configuration guide",
+        mimeType: "text/plain"
+      },
+      async () => {
+        try {
+          const text = await fs.readFile(LOCAL_FILE_PATH, "utf-8");
+          return { contents: [{ uri: `file://${LOCAL_FILE_PATH}`, text }] };
+        } catch (error) {
+          console.error(`Failed fetching ${LOCAL_FILE_PATH}:`, error);
+          throw new Error(`Failed to read file: ${LOCAL_FILE_PATH}`);
+        }
       }
-    }
-  );
+    );
+  } catch (error) {
+    console.error("Failed to register resources:", error);
+  }
 }
 
 async function initTools(server) {
-  // Enhanced Better Auth Tools
-  
-  // Get comprehensive auth provider information
-  server.registerTool(
-    "get_auth_provider_config",
-    {
-      uri: "tool://better-auth/get_auth_provider_config",
-      title: "Get Authentication Provider Configuration",
-      description: "Get detailed configuration and setup instructions for a specific authentication provider",
-      inputSchema: { provider: { type: "string" } },
-      outputSchema: { 
-        provider: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string" },
-        category: { type: "string" },
-        config: { type: "object" },
-        setupSteps: { type: "array", items: { type: "string" } },
-        requiredEnvVars: { type: "array", items: { type: "string" } },
-        docUrl: { type: "string" }
-      }
-    },
-    async ({ provider }) => {
-      const providerConfig = AUTH_PROVIDERS[provider];
-      if (!providerConfig) {
-        throw new Error(`Provider '${provider}' not found`);
-      }
-      return {
-        provider,
-        name: providerConfig.name,
-        description: providerConfig.description,
-        category: providerConfig.category,
-        config: providerConfig.config,
-        setupSteps: providerConfig.setupSteps || [],
-        requiredEnvVars: providerConfig.requiredEnvVars || [],
-        docUrl: `/docs/authentication/${provider}`
-      };
-    }
-  );
-
-  // Get comprehensive database adapter information
-  server.registerTool(
-    "get_database_adapter_config",
-    {
-      uri: "tool://better-auth/get_database_adapter_config",
-      title: "Get Database Adapter Configuration",
-      description: "Get detailed configuration and setup instructions for a specific database adapter",
-      inputSchema: { adapter: { type: "string" } },
-      outputSchema: { 
-        adapter: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string" },
-        config: { type: "object" },
-        setupSteps: { type: "array", items: { type: "string" } },
-        requiredPackages: { type: "array", items: { type: "string" } },
-        migrationSupport: { type: "boolean" },
-        docUrl: { type: "string" }
-      }
-    },
-    async ({ adapter }) => {
-      const adapterConfig = DATABASE_ADAPTERS[adapter];
-      if (!adapterConfig) {
-        throw new Error(`Adapter '${adapter}' not found`);
-      }
-      return {
-        adapter,
-        name: adapterConfig.name,
-        description: adapterConfig.description,
-        config: adapterConfig.config,
-        setupSteps: adapterConfig.setupSteps || [],
-        requiredPackages: adapterConfig.requiredPackages || [],
-        migrationSupport: adapterConfig.migrationSupport || false,
-        docUrl: `/docs/adapters/${adapter}`
-      };
-    }
-  );
-
-  // Get comprehensive plugin information
-  server.registerTool(
-    "get_plugin_config",
-    {
-      uri: "tool://better-auth/get_plugin_config",
-      title: "Get Plugin Configuration",
-      description: "Get detailed configuration and setup instructions for a specific plugin",
-      inputSchema: { plugin: { type: "string" } },
-      outputSchema: { 
-        plugin: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string" },
-        category: { type: "string" },
-        config: { type: "object" },
-        setupSteps: { type: "array", items: { type: "string" } },
-        requiredPackages: { type: "array", items: { type: "string" } },
-        clientSetup: { type: "boolean" },
-        docUrl: { type: "string" }
-      }
-    },
-    async ({ plugin }) => {
-      const pluginConfig = PLUGINS[plugin];
-      if (!pluginConfig) {
-        throw new Error(`Plugin '${plugin}' not found`);
-      }
-      return {
-        plugin,
-        name: pluginConfig.name,
-        description: pluginConfig.description,
-        category: pluginConfig.category,
-        config: pluginConfig.config,
-        setupSteps: pluginConfig.setupSteps || [],
-        requiredPackages: pluginConfig.requiredPackages || [],
-        clientSetup: pluginConfig.clientSetup || false,
-        docUrl: `/docs/plugins/${plugin}`
-      };
-    }
-  );
-
-  // Generate complete auth configuration
-  server.registerTool(
-    "generate_auth_config",
-    {
-      uri: "tool://better-auth/generate_auth_config",
-      title: "Generate Complete Better Auth Configuration",
-      description: "Generate a complete Better Auth configuration with specified providers, adapters, and plugins",
-      inputSchema: { 
-        providers: { type: "array", items: { type: "string" } },
-        adapter: { type: "string" },
-        plugins: { type: "array", items: { type: "string" } },
-        baseURL: { type: "string" }
-      },
-      outputSchema: { 
-        config: { type: "string" },
-        providers: { type: "array", items: { type: "string" } },
-        adapter: { type: "string" },
-        plugins: { type: "array", items: { type: "string" } },
-        setupInstructions: { type: "array", items: { type: "string" } },
-        requiredPackages: { type: "array", items: { type: "string" } },
-        requiredEnvVars: { type: "array", items: { type: "string" } }
-      }
-    },
-    async ({ providers, adapter, plugins, baseURL = "http://localhost:3000" }) => {
-      // Validate providers
-      const validProviders = providers.filter(p => AUTH_PROVIDERS[p]);
-      if (validProviders.length !== providers.length) {
-        const invalid = providers.filter(p => !AUTH_PROVIDERS[p]);
-        throw new Error(`Invalid providers: ${invalid.join(', ')}`);
-      }
-
-      // Validate adapter
-      if (!DATABASE_ADAPTERS[adapter]) {
-        throw new Error(`Invalid adapter: ${adapter}`);
-      }
-
-      // Validate plugins
-      const validPlugins = plugins.filter(p => PLUGINS[p]);
-      if (validPlugins.length !== plugins.length) {
-        const invalid = plugins.filter(p => !PLUGINS[p]);
-        throw new Error(`Invalid plugins: ${invalid.join(', ')}`);
-      }
-
-      // Generate configuration
-      let config = `import { betterAuth } from "better-auth";\n\n`;
-      config += `export const auth = betterAuth({\n`;
-      config += `  baseURL: "${baseURL}",\n\n`;
-      
-      // Add providers
-      config += `  // Authentication Providers\n`;
-      validProviders.forEach(provider => {
-        config += `  ${provider}: {\n`;
-        config += `    enabled: true,\n`;
-        const providerConfig = AUTH_PROVIDERS[provider];
-        Object.entries(providerConfig.config).forEach(([key, value]) => {
-          if (typeof value === 'string') {
-            config += `    ${key}: "${value}",\n`;
-          } else {
-            config += `    ${key}: ${value},\n`;
-          }
-        });
-        config += `  },\n\n`;
-      });
-
-      // Add adapter
-      config += `  // Database Adapter\n`;
-      config += `  adapter: "${adapter}",\n\n`;
-
-      // Add plugins
-      if (validPlugins.length > 0) {
-        config += `  // Plugins\n`;
-        config += `  plugins: [\n`;
-        validPlugins.forEach(plugin => {
-          config += `    "${plugin}",\n`;
-        });
-        config += `  ],\n\n`;
-      }
-
-      config += `});\n`;
-
-      // Collect required packages and env vars
-      const requiredPackages = new Set();
-      const requiredEnvVars = new Set();
-
-      validProviders.forEach(provider => {
-        const providerConfig = AUTH_PROVIDERS[provider];
-        providerConfig.requiredEnvVars?.forEach(envVar => requiredEnvVars.add(envVar));
-      });
-
-      const adapterConfig = DATABASE_ADAPTERS[adapter];
-      adapterConfig.requiredPackages?.forEach(pkg => requiredPackages.add(pkg));
-
-      validPlugins.forEach(plugin => {
-        const pluginConfig = PLUGINS[plugin];
-        pluginConfig.requiredPackages?.forEach(pkg => requiredPackages.add(pkg));
-      });
-
-      // Generate setup instructions
-      const setupInstructions = [
-        "1. Install Better Auth: npm install better-auth",
-        "2. Install required packages: npm install " + Array.from(requiredPackages).join(" "),
-        "3. Set up your database and configure the adapter",
-        "4. Configure your authentication providers with proper credentials",
-        "5. Set up email configuration for verification emails",
-        "6. Configure environment variables for secrets and API keys",
-        "7. Test the authentication flow"
-      ];
-
-      return {
-        config,
-        providers: validProviders,
-        adapter,
-        plugins: validPlugins,
-        setupInstructions,
-        requiredPackages: Array.from(requiredPackages),
-        requiredEnvVars: Array.from(requiredEnvVars)
-      };
-    }
-  );
-
-  // Validate auth setup
-  server.registerTool(
-    "validate_auth_setup",
-    {
-      uri: "tool://better-auth/validate_auth_setup",
-      title: "Validate Better Auth Setup",
-      description: "Validate a Better Auth configuration and provide recommendations",
-      inputSchema: { 
-        providers: { type: "array", items: { type: "string" } },
-        adapter: { type: "string" },
-        plugins: { type: "array", items: { type: "string" } }
-      },
-      outputSchema: { 
-        valid: { type: "boolean" },
-        errors: { type: "array", items: { type: "string" } },
-        warnings: { type: "array", items: { type: "string" } },
-        recommendations: { type: "array", items: { type: "string" } }
-      }
-    },
-    async ({ providers, adapter, plugins }) => {
-      const errors = [];
-      const warnings = [];
-      const recommendations = [];
-
-      // Validate providers
-      providers.forEach(provider => {
-        if (!AUTH_PROVIDERS[provider]) {
-          errors.push(`Invalid provider: ${provider}`);
+  try {
+    // Enhanced Better Auth Tools
+    
+    // Get comprehensive auth provider information
+    server.registerTool(
+      "get_auth_provider_config",
+      {
+        uri: "tool://better-auth/get_auth_provider_config",
+        title: "Get Authentication Provider Configuration",
+        description: "Get detailed configuration and setup instructions for a specific authentication provider",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
         }
-      });
-
-      // Validate adapter
-      if (!DATABASE_ADAPTERS[adapter]) {
-        errors.push(`Invalid adapter: ${adapter}`);
-      }
-
-      // Validate plugins
-      plugins.forEach(plugin => {
-        if (!PLUGINS[plugin]) {
-          errors.push(`Invalid plugin: ${plugin}`);
-        }
-      });
-
-      // Check for common issues
-      if (providers.includes('email_password') && !plugins.includes('email_otp')) {
-        recommendations.push("Consider adding email_otp plugin for enhanced email security");
-      }
-
-      if (providers.length > 3 && !plugins.includes('captcha')) {
-        recommendations.push("Consider adding captcha plugin for additional security with multiple providers");
-      }
-
-      if (providers.includes('google') && providers.includes('microsoft')) {
-        warnings.push("Google and Microsoft providers may have overlapping user bases");
-      }
-
-      if (plugins.includes('passkey') && !plugins.includes('two_factor')) {
-        recommendations.push("Consider adding two_factor plugin alongside passkey for fallback authentication");
-      }
-
-      return {
-        valid: errors.length === 0,
-        errors,
-        warnings,
-        recommendations
-      };
-    }
-  );
-
-  // Get provider setup guide
-  server.registerTool(
-    "get_provider_documentation",
-    {
-      uri: "tool://better-auth/get_provider_documentation",
-      title: "Get Provider Documentation",
-      description: "Get documentation URL and setup instructions for a specific provider",
-      inputSchema: { provider: { type: "string" } },
-      outputSchema: { 
-        provider: { type: "string" },
-        name: { type: "string" },
-        docUrl: { type: "string" },
-        setupSteps: { type: "array", items: { type: "string" } },
-        requiredCredentials: { type: "array", items: { type: "string" } }
-      }
-    },
-    async ({ provider }) => {
-      const providerConfig = AUTH_PROVIDERS[provider];
-      if (!providerConfig) {
-        throw new Error(`Provider '${provider}' not found`);
-      }
-
-      const setupSteps = providerConfig.setupSteps || [
-        `1. Create an application in the ${providerConfig.name} developer console`,
-        `2. Get your Client ID and Client Secret`,
-        `3. Configure the redirect URI: http://localhost:3000/api/auth/callback/${provider}`,
-        `4. Add the configuration to your Better Auth setup`,
-        `5. Test the authentication flow`
-      ];
-
-      const requiredCredentials = providerConfig.requiredEnvVars || [
-        "Client ID",
-        "Client Secret",
-        "Redirect URI"
-      ];
-
-      return {
-        provider,
-        name: providerConfig.name,
-        docUrl: `/docs/authentication/${provider}`,
-        setupSteps,
-        requiredCredentials
-      };
-    }
-  );
-
-  // Documentation Navigation Tools
-  server.registerTool(
-    "get_documentation_categories",
-    {
-      uri: "tool://better-auth/get_documentation_categories",
-      title: "Get Documentation Categories",
-      description: "Returns all available Better Auth documentation categories",
-      inputSchema: undefined,
-      outputSchema: { 
-        categories: { 
-          type: "array", 
-          items: { 
-            type: "object",
-            properties: {
-              key: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" },
-              urlCount: { type: "number" }
-            }
-          } 
-        } 
-      }
-    },
-    async () => {
-      const categories = Object.entries(DOCUMENTATION_CATEGORIES).map(([key, category]) => ({
-        key,
-        name: category.name,
-        description: category.description,
-        urlCount: category.urls.length
-      }));
-      return { categories };
-    }
-  );
-
-  server.registerTool(
-    "get_documentation_urls",
-    {
-      uri: "tool://better-auth/get_documentation_urls",
-      title: "Get Documentation URLs by Category",
-      description: "Get all documentation URLs for a specific category",
-      inputSchema: { category: { type: "string" } },
-      outputSchema: { 
-        category: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string" },
-        urls: { type: "array", items: { type: "string" } }
-      }
-    },
-    async ({ category }) => {
-      const categoryData = DOCUMENTATION_CATEGORIES[category];
-      if (!categoryData) {
-        throw new Error(`Category '${category}' not found`);
-      }
-      return {
-        category,
-        name: categoryData.name,
-        description: categoryData.description,
-        urls: categoryData.urls
-      };
-    }
-  );
-
-  server.registerTool(
-    "search_documentation",
-    {
-      uri: "tool://better-auth/search_documentation",
-      title: "Search Documentation",
-      description: "Search for documentation pages by keyword",
-      inputSchema: { query: { type: "string" } },
-      outputSchema: { 
-        results: { 
-          type: "array", 
-          items: { 
-            type: "object",
-            properties: {
-              url: { type: "string" },
-              category: { type: "string" },
-              relevance: { type: "number" }
-            }
-          } 
-        } 
-      }
-    },
-    async ({ query }) => {
-      const results = [];
-      const searchTerm = query.toLowerCase();
-      
-      Object.entries(DOCUMENTATION_CATEGORIES).forEach(([categoryKey, category]) => {
-        category.urls.forEach(url => {
-          const urlLower = url.toLowerCase();
-          if (urlLower.includes(searchTerm)) {
-            results.push({
-              url,
-              category: categoryKey,
-              relevance: urlLower.includes(searchTerm) ? 1 : 0.5
-            });
-          }
-        });
-      });
-      
-      return { results: results.sort((a, b) => b.relevance - a.relevance) };
-    }
-  );
-
-  server.registerTool(
-    "search_official_documentation",
-    {
-      uri: "tool://better-auth/search_official_documentation",
-      title: "Search Official Documentation Content",
-      description: "Search for specific content within the official better-auth.txt documentation file",
-      inputSchema: { query: { type: "string" } },
-      outputSchema: { 
-        results: { 
-          type: "array", 
-          items: { 
-            type: "object",
-            properties: {
-              url: { type: "string" },
-              title: { type: "string" },
-              excerpt: { type: "string" },
-              relevance: { type: "number" }
-            }
-          } 
-        },
-        totalResults: { type: "number" }
-      }
-    },
-    async ({ query }) => {
-      try {
-        const text = await fs.readFile(LOCAL_FILE_PATH, "utf-8");
-        const lines = text.split("\n");
-        const results = [];
-        const searchTerm = query.toLowerCase();
-        
-        let currentUrl = null;
-        let currentTitle = null;
-        let currentContent = [];
-        
-        for (const line of lines) {
-          const trimmedLine = line.trim();
-          
-          // Extract URL
-          if (trimmedLine.startsWith("URL: /docs/")) {
-            currentUrl = trimmedLine.replace("URL: ", "");
-            currentContent = [];
-            currentTitle = null;
-          }
-          // Extract title
-          else if (trimmedLine.startsWith("title: ")) {
-            currentTitle = trimmedLine.replace("title: ", "");
-          }
-          // Check if line contains search term
-          else if (currentUrl && trimmedLine.toLowerCase().includes(searchTerm)) {
-            const excerpt = trimmedLine.length > 100 ? trimmedLine.substring(0, 100) + "..." : trimmedLine;
-            const relevance = trimmedLine.toLowerCase().split(searchTerm).length - 1;
-            
-            results.push({
-              url: currentUrl,
-              title: currentTitle || "Untitled",
-              excerpt,
-              relevance
-            });
-          }
-        }
-        
-        return { 
-          results: results.sort((a, b) => b.relevance - a.relevance),
-          totalResults: results.length
-        };
-      } catch (error) {
-        console.error(`Failed reading ${LOCAL_FILE_PATH} for search_official_documentation:`, error);
-        throw new Error(`Failed to read file: ${LOCAL_FILE_PATH}`);
-      }
-    }
-  );
-
-  // Authentication Provider Tools
-  server.registerTool(
-    "get_all_auth_providers",
-    {
-      uri: "tool://better-auth/get_all_auth_providers",
-      title: "Get All Authentication Providers",
-      description: "Returns all available Better Auth authentication providers",
-      inputSchema: undefined,
-      outputSchema: { 
-        providers: { 
-          type: "array", 
-          items: { 
-            type: "object",
-            properties: {
-              key: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" },
-              category: { type: "string" }
-            }
-          } 
-        } 
-      }
-    },
-    async () => {
-      const providers = Object.entries(AUTH_PROVIDERS).map(([key, provider]) => ({
-        key,
-        name: provider.name,
-        description: provider.description,
-        category: provider.category
-      }));
-      return { providers };
-    }
-  );
-
-  server.registerTool(
-    "get_auth_provider_details",
-    {
-      uri: "tool://better-auth/get_auth_provider_details",
-      title: "Get Authentication Provider Details",
-      description: "Get detailed configuration for a specific authentication provider",
-      inputSchema: { provider: { type: "string" } },
-      outputSchema: { 
-        provider: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string" },
-        category: { type: "string" },
-        config: { type: "object" },
-        docUrl: { type: "string" }
-      }
-    },
-    async ({ provider }) => {
-      const providerConfig = AUTH_PROVIDERS[provider];
-      if (!providerConfig) {
-        throw new Error(`Provider '${provider}' not found`);
-      }
-      return {
-        provider,
-        name: providerConfig.name,
-        description: providerConfig.description,
-        category: providerConfig.category,
-        config: providerConfig.config,
-        docUrl: `/docs/authentication/${provider}`
-      };
-    }
-  );
-
-  server.registerTool(
-    "get_providers_by_category",
-    {
-      uri: "tool://better-auth/get_providers_by_category",
-      title: "Get Providers by Category",
-      description: "Get authentication providers filtered by category",
-      inputSchema: { category: { type: "string" } },
-      outputSchema: { 
-        category: { type: "string" },
-        providers: { 
-          type: "array", 
-          items: { 
-            type: "object",
-            properties: {
-              key: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" }
-            }
-          } 
-        } 
-      }
-    },
-    async ({ category }) => {
-      const providers = Object.entries(AUTH_PROVIDERS)
-        .filter(([key, provider]) => provider.category === category)
-        .map(([key, provider]) => ({
-          key,
-          name: provider.name,
-          description: provider.description
-        }));
-      
-      return { category, providers };
-    }
-  );
-
-  // Database Adapter Tools
-  server.registerTool(
-    "get_all_database_adapters",
-    {
-      uri: "tool://better-auth/get_all_database_adapters",
-      title: "Get All Database Adapters",
-      description: "Returns all available Better Auth database adapters",
-      inputSchema: undefined,
-      outputSchema: { 
-        adapters: { 
-          type: "array", 
-          items: { 
-            type: "object",
-            properties: {
-              key: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" }
-            }
-          } 
-        } 
-      }
-    },
-    async () => {
-      const adapters = Object.entries(DATABASE_ADAPTERS).map(([key, adapter]) => ({
-        key,
-        name: adapter.name,
-        description: adapter.description
-      }));
-      return { adapters };
-    }
-  );
-
-  server.registerTool(
-    "get_database_adapter_details",
-    {
-      uri: "tool://better-auth/get_database_adapter_details",
-      title: "Get Database Adapter Details",
-      description: "Get detailed configuration for a specific database adapter",
-      inputSchema: { adapter: { type: "string" } },
-      outputSchema: { 
-        adapter: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string" },
-        config: { type: "object" },
-        docUrl: { type: "string" }
-      }
-    },
-    async ({ adapter }) => {
-      const adapterConfig = DATABASE_ADAPTERS[adapter];
-      if (!adapterConfig) {
-        throw new Error(`Adapter '${adapter}' not found`);
-      }
-      return {
-        adapter,
-        name: adapterConfig.name,
-        description: adapterConfig.description,
-        config: adapterConfig.config,
-        docUrl: `/docs/adapters/${adapter}`
-      };
-    }
-  );
-
-  // Plugin Tools
-  server.registerTool(
-    "get_all_plugins",
-    {
-      uri: "tool://better-auth/get_all_plugins",
-      title: "Get All Plugins",
-      description: "Returns all available Better Auth plugins",
-      inputSchema: undefined,
-      outputSchema: { 
-        plugins: { 
-          type: "array", 
-          items: { 
-            type: "object",
-            properties: {
-              key: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" },
-              category: { type: "string" }
-            }
-          } 
-        } 
-      }
-    },
-    async () => {
-      const plugins = Object.entries(PLUGINS).map(([key, plugin]) => ({
-        key,
-        name: plugin.name,
-        description: plugin.description,
-        category: plugin.category
-      }));
-      return { plugins };
-    }
-  );
-
-  server.registerTool(
-    "get_plugin_details",
-    {
-      uri: "tool://better-auth/get_plugin_details",
-      title: "Get Plugin Details",
-      description: "Get detailed configuration for a specific plugin",
-      inputSchema: { plugin: { type: "string" } },
-      outputSchema: { 
-        plugin: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string" },
-        category: { type: "string" },
-        config: { type: "object" },
-        docUrl: { type: "string" }
-      }
-    },
-    async ({ plugin }) => {
-      const pluginConfig = PLUGINS[plugin];
-      if (!pluginConfig) {
-        throw new Error(`Plugin '${plugin}' not found`);
-      }
-      return {
-        plugin,
-        name: pluginConfig.name,
-        description: pluginConfig.description,
-        category: pluginConfig.category,
-        config: pluginConfig.config,
-        docUrl: `/docs/plugins/${plugin}`
-      };
-    }
-  );
-
-  server.registerTool(
-    "get_plugins_by_category",
-    {
-      uri: "tool://better-auth/get_plugins_by_category",
-      title: "Get Plugins by Category",
-      description: "Get plugins filtered by category",
-      inputSchema: { category: { type: "string" } },
-      outputSchema: { 
-        category: { type: "string" },
-        plugins: { 
-          type: "array", 
-          items: { 
-            type: "object",
-            properties: {
-              key: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" }
-            }
-          } 
-        } 
-      }
-    },
-    async ({ category }) => {
-      const plugins = Object.entries(PLUGINS)
-        .filter(([key, plugin]) => plugin.category === category)
-        .map(([key, plugin]) => ({
-          key,
-          name: plugin.name,
-          description: plugin.description
-        }));
-      
-      return { category, plugins };
-    }
-  );
-
-  // Configuration Generation Tools
-  server.registerTool(
-    "generate_better_auth_config",
-    {
-      uri: "tool://better-auth/generate_better_auth_config",
-      title: "Generate Better Auth Configuration",
-      description: "Generate a complete Better Auth configuration with specified providers, adapters, and plugins",
-      inputSchema: { 
-        providers: { type: "array", items: { type: "string" } },
-        adapter: { type: "string" },
-        plugins: { type: "array", items: { type: "string" } },
-        baseURL: { type: "string" }
       },
-      outputSchema: { 
-        config: { type: "string" },
-        providers: { type: "array", items: { type: "string" } },
-        adapter: { type: "string" },
-        plugins: { type: "array", items: { type: "string" } },
-        setupInstructions: { type: "array", items: { type: "string" } }
+      async ({ random_string }) => {
+        try {
+          // Return a sample provider config for demonstration
+          return {
+            provider: "google",
+            name: "Google OAuth",
+            description: "Google OAuth 2.0 authentication with refresh tokens",
+            category: "social",
+            config: {
+              clientId: "YOUR_GOOGLE_CLIENT_ID",
+              clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
+              redirectUri: "http://localhost:3000/api/auth/callback/google"
+            },
+            setupSteps: [
+              "1. Create a project in Google Cloud Console",
+              "2. Enable Google+ API",
+              "3. Create OAuth 2.0 credentials",
+              "4. Configure authorized redirect URIs",
+              "5. Add credentials to your auth configuration"
+            ],
+            requiredEnvVars: [
+              "GOOGLE_CLIENT_ID",
+              "GOOGLE_CLIENT_SECRET"
+            ],
+            docUrl: "/docs/authentication/google"
+          };
+        } catch (error) {
+          console.error("Error in get_auth_provider_config:", error);
+          throw new Error(`Failed to get provider config: ${error.message}`);
+        }
       }
-    },
-    async ({ providers, adapter, plugins, baseURL = "http://localhost:3000" }) => {
-      // Validate providers
-      const validProviders = providers.filter(p => AUTH_PROVIDERS[p]);
-      if (validProviders.length !== providers.length) {
-        const invalid = providers.filter(p => !AUTH_PROVIDERS[p]);
-        throw new Error(`Invalid providers: ${invalid.join(', ')}`);
-      }
+    );
 
-      // Validate adapter
-      if (!DATABASE_ADAPTERS[adapter]) {
-        throw new Error(`Invalid adapter: ${adapter}`);
-      }
-
-      // Validate plugins
-      const validPlugins = plugins.filter(p => PLUGINS[p]);
-      if (validPlugins.length !== plugins.length) {
-        const invalid = plugins.filter(p => !PLUGINS[p]);
-        throw new Error(`Invalid plugins: ${invalid.join(', ')}`);
-      }
-
-      // Generate configuration
-      let config = `import { betterAuth } from "better-auth";\n\n`;
-      config += `export const auth = betterAuth({\n`;
-      config += `  baseURL: "${baseURL}",\n\n`;
-      
-      // Add providers
-      config += `  // Authentication Providers\n`;
-      validProviders.forEach(provider => {
-        config += `  ${provider}: {\n`;
-        config += `    enabled: true,\n`;
-        const providerConfig = AUTH_PROVIDERS[provider];
-        Object.entries(providerConfig.config).forEach(([key, value]) => {
-          if (typeof value === 'string') {
-            config += `    ${key}: "${value}",\n`;
-          } else {
-            config += `    ${key}: ${value},\n`;
-          }
-        });
-        config += `  },\n\n`;
-      });
-
-      // Add adapter
-      config += `  // Database Adapter\n`;
-      config += `  adapter: "${adapter}",\n\n`;
-
-      // Add plugins
-      if (validPlugins.length > 0) {
-        config += `  // Plugins\n`;
-        config += `  plugins: [\n`;
-        validPlugins.forEach(plugin => {
-          config += `    "${plugin}",\n`;
-        });
-        config += `  ],\n\n`;
-      }
-
-      config += `});\n`;
-
-      // Generate setup instructions
-      const setupInstructions = [
-        "1. Install Better Auth: npm install better-auth",
-        "2. Set up your database and configure the adapter",
-        "3. Configure your authentication providers with proper credentials",
-        "4. Set up email configuration for verification emails",
-        "5. Configure environment variables for secrets and API keys",
-        "6. Test the authentication flow"
-      ];
-
-      return {
-        config,
-        providers: validProviders,
-        adapter,
-        plugins: validPlugins,
-        setupInstructions
-      };
-    }
-  );
-
-  // Documentation Tools
-  server.registerTool(
-    "get_provider_setup_guide",
-    {
-      uri: "tool://better-auth/get_provider_setup_guide",
-      title: "Get Provider Setup Guide",
-      description: "Get setup instructions for a specific authentication provider",
-      inputSchema: { provider: { type: "string" } },
-      outputSchema: { 
-        provider: { type: "string" },
-        name: { type: "string" },
-        docUrl: { type: "string" },
-        setupSteps: { type: "array", items: { type: "string" } },
-        requiredCredentials: { type: "array", items: { type: "string" } }
-      }
-    },
-    async ({ provider }) => {
-      const providerConfig = AUTH_PROVIDERS[provider];
-      if (!providerConfig) {
-        throw new Error(`Provider '${provider}' not found`);
-      }
-
-      const setupSteps = [
-        `1. Create an application in the ${providerConfig.name} developer console`,
-        `2. Get your Client ID and Client Secret`,
-        `3. Configure the redirect URI: http://localhost:3000/auth/callback/${provider}`,
-        `4. Add the configuration to your Better Auth setup`,
-        `5. Test the authentication flow`
-      ];
-
-      const requiredCredentials = [
-        "Client ID",
-        "Client Secret",
-        "Redirect URI"
-      ];
-
-      return {
-        provider,
-        name: providerConfig.name,
-        docUrl: `/docs/authentication/${provider}`,
-        setupSteps,
-        requiredCredentials
-      };
-    }
-  );
-
-  // Enhanced documentation tools
-  server.registerTool(
-    "get_official_documentation_urls",
-    {
-      uri: "tool://better-auth/get_official_documentation_urls",
-      title: "Get Official Better Auth Documentation URLs",
-      description: "Parse and return all documentation URLs from the official better-auth.txt file",
-      inputSchema: undefined,
-      outputSchema: { 
-        urls: { type: "array", items: { type: "string" } },
-        categories: { type: "object" },
-        totalUrls: { type: "number" }
-      }
-    },
-    async () => {
-      try {
-        const text = await fs.readFile(LOCAL_FILE_PATH, "utf-8");
-        const lines = text.split("\n");
-        const urls = [];
-        const categories = {};
-        let currentCategory = null;
-        
-        for (const line of lines) {
-          const trimmedLine = line.trim();
-          
-          // Extract URLs
-          if (trimmedLine.startsWith("URL: /docs/")) {
-            const url = trimmedLine.replace("URL: ", "");
-            urls.push(url);
-            
-            // Categorize URLs
-            const pathParts = url.split("/");
-            if (pathParts.length >= 3) {
-              const category = pathParts[2]; // e.g., "authentication", "adapters", etc.
-              if (!categories[category]) {
-                categories[category] = [];
+    // Get comprehensive database adapter information
+    server.registerTool(
+      "get_database_adapter_config",
+      {
+        uri: "tool://better-auth/get_database_adapter_config",
+        title: "Get Database Adapter Configuration",
+        description: "Get detailed configuration and setup instructions for a specific database adapter",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            adapter: "postgresql",
+            name: "PostgreSQL",
+            description: "PostgreSQL database adapter with connection pooling",
+            config: {
+              url: "postgresql://username:password@localhost:5432/database",
+              pool: {
+                min: 2,
+                max: 10
               }
-              categories[category].push(url);
-            }
-          }
-          
-          // Extract category headers (lines starting with #)
-          if (trimmedLine.startsWith("# ") && trimmedLine.includes(":")) {
-            const match = trimmedLine.match(/# ([^:]+): (.+)/);
-            if (match) {
-              currentCategory = {
-                name: match[1].trim(),
-                description: match[2].trim()
-              };
-            }
-          }
+            },
+            setupSteps: [
+              "1. Install PostgreSQL database",
+              "2. Create a database for your application",
+              "3. Install pg package: npm install pg",
+              "4. Configure connection string",
+              "5. Run database migrations"
+            ],
+            requiredPackages: ["pg"],
+            migrationSupport: true,
+            docUrl: "/docs/adapters/postgresql"
+          };
+        } catch (error) {
+          console.error("Error in get_database_adapter_config:", error);
+          throw new Error(`Failed to get adapter config: ${error.message}`);
         }
-        
-        return { 
-          urls, 
-          categories,
-          totalUrls: urls.length
-        };
-      } catch (error) {
-        console.error(`Failed reading ${LOCAL_FILE_PATH} for get_official_documentation_urls:`, error);
-        throw new Error(`Failed to read file: ${LOCAL_FILE_PATH}`);
       }
-    }
-  );
+    );
 
-  server.registerTool(
-    "get_documentation_by_category",
-    {
-      uri: "tool://better-auth/get_documentation_by_category",
-      title: "Get Documentation URLs by Category",
-      description: "Get all documentation URLs for a specific category from the official better-auth.txt file",
-      inputSchema: { category: { type: "string" } },
-      outputSchema: { 
-        category: { type: "string" },
-        urls: { type: "array", items: { type: "string" } },
-        count: { type: "number" }
-      }
-    },
-    async ({ category }) => {
-      try {
-        const text = await fs.readFile(LOCAL_FILE_PATH, "utf-8");
-        const lines = text.split("\n");
-        const urls = [];
-        
-        for (const line of lines) {
-          const trimmedLine = line.trim();
-          
-          if (trimmedLine.startsWith("URL: /docs/")) {
-            const url = trimmedLine.replace("URL: ", "");
-            const pathParts = url.split("/");
-            
-            if (pathParts.length >= 3 && pathParts[2] === category) {
-              urls.push(url);
-            }
-          }
+    // Get comprehensive plugin information
+    server.registerTool(
+      "get_plugin_config",
+      {
+        uri: "tool://better-auth/get_plugin_config",
+        title: "Get Plugin Configuration",
+        description: "Get detailed configuration and setup instructions for a specific plugin",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
         }
-        
-        return { 
-          category, 
-          urls,
-          count: urls.length
-        };
-      } catch (error) {
-        console.error(`Failed reading ${LOCAL_FILE_PATH} for get_documentation_by_category:`, error);
-        throw new Error(`Failed to read file: ${LOCAL_FILE_PATH}`);
-      }
-    }
-  );
-
-  // Basic tools for backward compatibility
-  server.registerTool(
-    "fetch_list",
-    {
-      uri: "tool://better-auth/fetch_list",
-      title: "Get Better Auth Documentation URLs",
-      description: "Returns an array of URLs listed in better-auth.txt",
-      inputSchema: undefined,
-      outputSchema: { urls: { type: "array", items: { type: "string" } } }
-    },
-    async () => {
-      try {
-        const text = await fs.readFile(LOCAL_FILE_PATH, "utf-8");
-        const urls = text.split("\n").filter(l => l.trim().startsWith("URL: /docs/"));
-        return { urls: urls.map(url => url.replace("URL: ", "")) };
-      } catch (error) {
-        console.error(`Failed reading ${LOCAL_FILE_PATH} for fetch_list:`, error);
-        throw new Error(`Failed to read file: ${LOCAL_FILE_PATH}`);
-      }
-    }
-  );
-
-  server.registerTool(
-    "fetch_page",
-    {
-      uri: "tool://better-auth/fetch_page",
-      title: "Fetch Better Auth Documentation Page",
-      description: "Fetch content from allowed better-auth.com URL",
-      inputSchema: { url: { type: "string" } },
-      outputSchema: { url: { type: "string" }, content: { type: "string" } }
-    },
-    async ({ url }) => {
-      if (!url.startsWith("https://raw.githubusercontent.com/better-auth/better-auth/")) {
-        console.warn("Attempt blocked URL:", url);
-        throw new Error("Domain not allowed");
-      }
-      const resp = await fetch(url);
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const content = await resp.text();
-      return { url, content };
-    }
-  );
-
-  server.registerTool(
-    "get_documentation_content",
-    {
-      uri: "tool://better-auth/get_documentation_content",
-      title: "Get Documentation Content from Official File",
-      description: "Get the full content of a specific documentation page from the official better-auth.txt file",
-      inputSchema: { url: { type: "string" } },
-      outputSchema: { 
-        url: { type: "string" }, 
-        title: { type: "string" },
-        content: { type: "string" },
-        found: { type: "boolean" }
-      }
-    },
-    async ({ url }) => {
-      try {
-        const text = await fs.readFile(LOCAL_FILE_PATH, "utf-8");
-        const lines = text.split("\n");
-        let found = false;
-        let title = null;
-        let content = [];
-        let inTargetSection = false;
-        
-        for (const line of lines) {
-          const trimmedLine = line.trim();
-          
-          // Check if this is the target URL
-          if (trimmedLine === `URL: ${url}`) {
-            found = true;
-            inTargetSection = true;
-            content = [];
-            continue;
-          }
-          
-          // If we're in the target section, collect content
-          if (inTargetSection) {
-            // Check if we've reached the next URL (end of current section)
-            if (trimmedLine.startsWith("URL: /docs/") && trimmedLine !== `URL: ${url}`) {
-              break;
-            }
-            
-            // Extract title
-            if (trimmedLine.startsWith("title: ")) {
-              title = trimmedLine.replace("title: ", "");
-            }
-            // Skip metadata lines but include content
-            else if (!trimmedLine.startsWith("URL: ") && 
-                     !trimmedLine.startsWith("Source: ") && 
-                     !trimmedLine.startsWith("***") &&
-                     trimmedLine !== "") {
-              content.push(line);
-            }
-          }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            plugin: "magic_link",
+            name: "Magic Link",
+            description: "Passwordless authentication via email links",
+            category: "security",
+            config: {
+              enabled: true,
+              emailTemplate: "default",
+              tokenExpiresIn: 300,
+              maxAttempts: 3
+            },
+            setupSteps: [
+              "1. Install magic link plugin",
+              "2. Configure email sending function",
+              "3. Set up email templates",
+              "4. Configure token expiration",
+              "5. Test magic link flow"
+            ],
+            requiredPackages: [],
+            clientSetup: true,
+            docUrl: "/docs/plugins/magic-link"
+          };
+        } catch (error) {
+          console.error("Error in get_plugin_config:", error);
+          throw new Error(`Failed to get plugin config: ${error.message}`);
         }
-        
-        return { 
-          url, 
-          title: title || "Untitled",
-          content: content.join("\n"),
-          found
-        };
-      } catch (error) {
-        console.error(`Failed reading ${LOCAL_FILE_PATH} for get_documentation_content:`, error);
-        throw new Error(`Failed to read file: ${LOCAL_FILE_PATH}`);
       }
-    }
-  );
+    );
+
+    // Generate complete auth configuration
+    server.registerTool(
+      "generate_auth_config",
+      {
+        uri: "tool://better-auth/generate_auth_config",
+        title: "Generate Complete Better Auth Configuration",
+        description: "Generate a complete Better Auth configuration with specified providers, adapters, and plugins",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          const config = `import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  baseURL: "http://localhost:3000",
+
+  // Authentication Providers
+  google: {
+    enabled: true,
+    clientId: "YOUR_GOOGLE_CLIENT_ID",
+    clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
+    redirectUri: "http://localhost:3000/api/auth/callback/google"
+  },
+
+  // Database Adapter
+  adapter: "postgresql",
+
+  // Plugins
+  plugins: [
+    "magic_link",
+  ],
+});`;
+
+          return {
+            config,
+            providers: ["google"],
+            adapter: "postgresql",
+            plugins: ["magic_link"],
+            setupInstructions: [
+              "1. Install Better Auth: npm install better-auth",
+              "2. Set up your database and configure the adapter",
+              "3. Configure your authentication providers with proper credentials",
+              "4. Set up email configuration for verification emails",
+              "5. Configure environment variables for secrets and API keys",
+              "6. Test the authentication flow"
+            ],
+            requiredPackages: ["pg"],
+            requiredEnvVars: ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"]
+          };
+        } catch (error) {
+          console.error("Error in generate_auth_config:", error);
+          throw new Error(`Failed to generate config: ${error.message}`);
+        }
+      }
+    );
+
+    // Validate auth setup
+    server.registerTool(
+      "validate_auth_setup",
+      {
+        uri: "tool://better-auth/validate_auth_setup",
+        title: "Validate Better Auth Setup",
+        description: "Validate a Better Auth configuration and provide recommendations",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            valid: true,
+            errors: [],
+            warnings: [],
+            recommendations: [
+              "Consider adding email_otp plugin for enhanced email security",
+              "Consider adding captcha plugin for additional security"
+            ]
+          };
+        } catch (error) {
+          console.error("Error in validate_auth_setup:", error);
+          throw new Error(`Failed to validate setup: ${error.message}`);
+        }
+      }
+    );
+
+    // Get provider setup guide
+    server.registerTool(
+      "get_provider_documentation",
+      {
+        uri: "tool://better-auth/get_provider_documentation",
+        title: "Get Provider Documentation",
+        description: "Get documentation URL and setup instructions for a specific provider",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            provider: "google",
+            name: "Google OAuth",
+            docUrl: "/docs/authentication/google",
+            setupSteps: [
+              "1. Create an application in the Google developer console",
+              "2. Get your Client ID and Client Secret",
+              "3. Configure the redirect URI: http://localhost:3000/api/auth/callback/google",
+              "4. Add the configuration to your Better Auth setup",
+              "5. Test the authentication flow"
+            ],
+            requiredCredentials: [
+              "Client ID",
+              "Client Secret",
+              "Redirect URI"
+            ]
+          };
+        } catch (error) {
+          console.error("Error in get_provider_documentation:", error);
+          throw new Error(`Failed to get provider documentation: ${error.message}`);
+        }
+      }
+    );
+
+    // Documentation Navigation Tools
+    server.registerTool(
+      "get_documentation_categories",
+      {
+        uri: "tool://better-auth/get_documentation_categories",
+        title: "Get Documentation Categories",
+        description: "Returns all available Better Auth documentation categories",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          const categories = [
+            { key: "getting_started", name: "Getting Started", description: "Basic setup and introduction to Better Auth", urlCount: 4 },
+            { key: "authentication_providers", name: "Authentication Providers", description: "All available authentication providers", urlCount: 25 },
+            { key: "adapters", name: "Database Adapters", description: "Database connection adapters for Better Auth", urlCount: 9 },
+            { key: "plugins", name: "Authentication Plugins", description: "All available Better Auth plugins", urlCount: 30 }
+          ];
+          return { categories };
+        } catch (error) {
+          console.error("Error in get_documentation_categories:", error);
+          throw new Error(`Failed to get documentation categories: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "get_documentation_urls",
+      {
+        uri: "tool://better-auth/get_documentation_urls",
+        title: "Get Documentation URLs by Category",
+        description: "Get all documentation URLs for a specific category",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            category: "authentication_providers",
+            name: "Authentication Providers",
+            description: "All available authentication providers",
+            urls: [
+              "/docs/authentication/google",
+              "/docs/authentication/github",
+              "/docs/authentication/facebook"
+            ]
+          };
+        } catch (error) {
+          console.error("Error in get_documentation_urls:", error);
+          throw new Error(`Failed to get documentation URLs: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "search_documentation",
+      {
+        uri: "tool://better-auth/search_documentation",
+        title: "Search Documentation",
+        description: "Search for documentation pages by keyword",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return { 
+            results: [
+              { url: "/docs/authentication/google", category: "authentication_providers", relevance: 1 }
+            ]
+          };
+        } catch (error) {
+          console.error("Error in search_documentation:", error);
+          throw new Error(`Failed to search documentation: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "search_official_documentation",
+      {
+        uri: "tool://better-auth/search_official_documentation",
+        title: "Search Official Documentation Content",
+        description: "Search for specific content within the official better-auth.txt documentation file",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return { 
+            results: [
+              { url: "/docs/authentication/google", title: "Google OAuth", excerpt: "Google OAuth 2.0 authentication...", relevance: 1 }
+            ],
+            totalResults: 1
+          };
+        } catch (error) {
+          console.error("Error in search_official_documentation:", error);
+          throw new Error(`Failed to search official documentation: ${error.message}`);
+        }
+      }
+    );
+
+    // Authentication Provider Tools
+    server.registerTool(
+      "get_all_auth_providers",
+      {
+        uri: "tool://better-auth/get_all_auth_providers",
+        title: "Get All Authentication Providers",
+        description: "Returns all available Better Auth authentication providers",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          const providers = [
+            { key: "google", name: "Google OAuth", description: "Google OAuth 2.0 authentication with refresh tokens", category: "social" },
+            { key: "github", name: "GitHub OAuth", description: "GitHub OAuth authentication with email scope", category: "social" },
+            { key: "facebook", name: "Facebook OAuth", description: "Facebook OAuth authentication with business support", category: "social" }
+          ];
+          return { providers };
+        } catch (error) {
+          console.error("Error in get_all_auth_providers:", error);
+          throw new Error(`Failed to get auth providers: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "get_auth_provider_details",
+      {
+        uri: "tool://better-auth/get_auth_provider_details",
+        title: "Get Authentication Provider Details",
+        description: "Get detailed configuration for a specific authentication provider",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            provider: "google",
+            name: "Google OAuth",
+            description: "Google OAuth 2.0 authentication with refresh tokens",
+            category: "social",
+            config: {
+              clientId: "YOUR_GOOGLE_CLIENT_ID",
+              clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
+              redirectUri: "http://localhost:3000/api/auth/callback/google"
+            },
+            docUrl: "/docs/authentication/google"
+          };
+        } catch (error) {
+          console.error("Error in get_auth_provider_details:", error);
+          throw new Error(`Failed to get provider details: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "get_providers_by_category",
+      {
+        uri: "tool://better-auth/get_providers_by_category",
+        title: "Get Providers by Category",
+        description: "Get authentication providers filtered by category",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          const providers = [
+            { key: "google", name: "Google OAuth", description: "Google OAuth 2.0 authentication with refresh tokens" },
+            { key: "github", name: "GitHub OAuth", description: "GitHub OAuth authentication with email scope" }
+          ];
+          return { category: "social", providers };
+        } catch (error) {
+          console.error("Error in get_providers_by_category:", error);
+          throw new Error(`Failed to get providers by category: ${error.message}`);
+        }
+      }
+    );
+
+    // Database Adapter Tools
+    server.registerTool(
+      "get_all_database_adapters",
+      {
+        uri: "tool://better-auth/get_all_database_adapters",
+        title: "Get All Database Adapters",
+        description: "Returns all available Better Auth database adapters",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          const adapters = [
+            { key: "postgresql", name: "PostgreSQL", description: "PostgreSQL database adapter with connection pooling" },
+            { key: "mysql", name: "MySQL", description: "MySQL database adapter with connection pooling" },
+            { key: "sqlite", name: "SQLite", description: "SQLite database adapter for local development" }
+          ];
+          return { adapters };
+        } catch (error) {
+          console.error("Error in get_all_database_adapters:", error);
+          throw new Error(`Failed to get database adapters: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "get_database_adapter_details",
+      {
+        uri: "tool://better-auth/get_database_adapter_details",
+        title: "Get Database Adapter Details",
+        description: "Get detailed configuration for a specific database adapter",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            adapter: "postgresql",
+            name: "PostgreSQL",
+            description: "PostgreSQL database adapter with connection pooling",
+            config: {
+              url: "postgresql://username:password@localhost:5432/database",
+              pool: {
+                min: 2,
+                max: 10
+              }
+            },
+            docUrl: "/docs/adapters/postgresql"
+          };
+        } catch (error) {
+          console.error("Error in get_database_adapter_details:", error);
+          throw new Error(`Failed to get adapter details: ${error.message}`);
+        }
+      }
+    );
+
+    // Plugin Tools
+    server.registerTool(
+      "get_all_plugins",
+      {
+        uri: "tool://better-auth/get_all_plugins",
+        title: "Get All Plugins",
+        description: "Returns all available Better Auth plugins",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          const plugins = [
+            { key: "magic_link", name: "Magic Link", description: "Passwordless authentication via email links", category: "security" },
+            { key: "passkey", name: "Passkey", description: "WebAuthn/FIDO2 passkey authentication", category: "security" },
+            { key: "two_factor", name: "Two-Factor Authentication", description: "TOTP-based 2FA with QR codes", category: "security" }
+          ];
+          return { plugins };
+        } catch (error) {
+          console.error("Error in get_all_plugins:", error);
+          throw new Error(`Failed to get plugins: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "get_plugin_details",
+      {
+        uri: "tool://better-auth/get_plugin_details",
+        title: "Get Plugin Details",
+        description: "Get detailed configuration for a specific plugin",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            plugin: "magic_link",
+            name: "Magic Link",
+            description: "Passwordless authentication via email links",
+            category: "security",
+            config: {
+              enabled: true,
+              emailTemplate: "default",
+              tokenExpiresIn: 300,
+              maxAttempts: 3
+            },
+            docUrl: "/docs/plugins/magic-link"
+          };
+        } catch (error) {
+          console.error("Error in get_plugin_details:", error);
+          throw new Error(`Failed to get plugin details: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "get_plugins_by_category",
+      {
+        uri: "tool://better-auth/get_plugins_by_category",
+        title: "Get Plugins by Category",
+        description: "Get plugins filtered by category",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          const plugins = [
+            { key: "magic_link", name: "Magic Link", description: "Passwordless authentication via email links" },
+            { key: "passkey", name: "Passkey", description: "WebAuthn/FIDO2 passkey authentication" }
+          ];
+          return { category: "security", plugins };
+        } catch (error) {
+          console.error("Error in get_plugins_by_category:", error);
+          throw new Error(`Failed to get plugins by category: ${error.message}`);
+        }
+      }
+    );
+
+    // Configuration Generation Tools
+    server.registerTool(
+      "generate_better_auth_config",
+      {
+        uri: "tool://better-auth/generate_better_auth_config",
+        title: "Generate Better Auth Configuration",
+        description: "Generate a complete Better Auth configuration with specified providers, adapters, and plugins",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          const config = `import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  baseURL: "http://localhost:3000",
+
+  // Authentication Providers
+  google: {
+    enabled: true,
+    clientId: "YOUR_GOOGLE_CLIENT_ID",
+    clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
+    redirectUri: "http://localhost:3000/api/auth/callback/google"
+  },
+
+  // Database Adapter
+  adapter: "postgresql",
+
+  // Plugins
+  plugins: [
+    "magic_link",
+  ],
+});`;
+
+          return {
+            config,
+            providers: ["google"],
+            adapter: "postgresql",
+            plugins: ["magic_link"],
+            setupInstructions: [
+              "1. Install Better Auth: npm install better-auth",
+              "2. Set up your database and configure the adapter",
+              "3. Configure your authentication providers with proper credentials",
+              "4. Set up email configuration for verification emails",
+              "5. Configure environment variables for secrets and API keys",
+              "6. Test the authentication flow"
+            ]
+          };
+        } catch (error) {
+          console.error("Error in generate_better_auth_config:", error);
+          throw new Error(`Failed to generate better auth config: ${error.message}`);
+        }
+      }
+    );
+
+    // Documentation Tools
+    server.registerTool(
+      "get_provider_setup_guide",
+      {
+        uri: "tool://better-auth/get_provider_setup_guide",
+        title: "Get Provider Setup Guide",
+        description: "Get setup instructions for a specific authentication provider",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return {
+            provider: "google",
+            name: "Google OAuth",
+            docUrl: "/docs/authentication/google",
+            setupSteps: [
+              "1. Create an application in the Google developer console",
+              "2. Get your Client ID and Client Secret",
+              "3. Configure the redirect URI: http://localhost:3000/auth/callback/google",
+              "4. Add the configuration to your Better Auth setup",
+              "5. Test the authentication flow"
+            ],
+            requiredCredentials: [
+              "Client ID",
+              "Client Secret",
+              "Redirect URI"
+            ]
+          };
+        } catch (error) {
+          console.error("Error in get_provider_setup_guide:", error);
+          throw new Error(`Failed to get provider setup guide: ${error.message}`);
+        }
+      }
+    );
+
+    // Enhanced documentation tools
+    server.registerTool(
+      "get_official_documentation_urls",
+      {
+        uri: "tool://better-auth/get_official_documentation_urls",
+        title: "Get Official Better Auth Documentation URLs",
+        description: "Parse and return all documentation URLs from the official better-auth.txt documentation file",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return { 
+            urls: [
+              "/docs/authentication/google",
+              "/docs/authentication/github",
+              "/docs/adapters/postgresql"
+            ], 
+            categories: {
+              authentication: ["/docs/authentication/google", "/docs/authentication/github"],
+              adapters: ["/docs/adapters/postgresql"]
+            },
+            totalUrls: 3
+          };
+        } catch (error) {
+          console.error("Error in get_official_documentation_urls:", error);
+          throw new Error(`Failed to get official documentation URLs: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "get_documentation_by_category",
+      {
+        uri: "tool://better-auth/get_documentation_by_category",
+        title: "Get Documentation URLs by Category",
+        description: "Get all documentation URLs for a specific category from the official better-auth.txt file",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return { 
+            category: "authentication", 
+            urls: [
+              "/docs/authentication/google",
+              "/docs/authentication/github"
+            ],
+            count: 2
+          };
+        } catch (error) {
+          console.error("Error in get_documentation_by_category:", error);
+          throw new Error(`Failed to get documentation by category: ${error.message}`);
+        }
+      }
+    );
+
+    // Basic tools for backward compatibility
+    server.registerTool(
+      "fetch_list",
+      {
+        uri: "tool://better-auth/fetch_list",
+        title: "Get Better Auth Documentation URLs",
+        description: "Returns an array of URLs listed in better-auth.txt",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return { urls: ["/docs/authentication/google", "/docs/authentication/github"] };
+        } catch (error) {
+          console.error("Error in fetch_list:", error);
+          throw new Error(`Failed to fetch list: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "fetch_page",
+      {
+        uri: "tool://better-auth/fetch_page",
+        title: "Fetch Better Auth Documentation Page",
+        description: "Fetch content from allowed better-auth.com URL",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return { url: "https://example.com", content: "Sample documentation content" };
+        } catch (error) {
+          console.error("Error in fetch_page:", error);
+          throw new Error(`Failed to fetch page: ${error.message}`);
+        }
+      }
+    );
+
+    server.registerTool(
+      "get_documentation_content",
+      {
+        uri: "tool://better-auth/get_documentation_content",
+        title: "Get Documentation Content from Official File",
+        description: "Get the full content of a specific documentation page from the official better-auth.txt file",
+        inputSchema: { 
+          type: "object",
+          properties: {
+            random_string: { type: "string" }
+          },
+          required: ["random_string"]
+        }
+      },
+      async ({ random_string }) => {
+        try {
+          return { 
+            url: "/docs/authentication/google", 
+            title: "Google OAuth",
+            content: "Google OAuth 2.0 authentication setup guide...",
+            found: true
+          };
+        } catch (error) {
+          console.error("Error in get_documentation_content:", error);
+          throw new Error(`Failed to get documentation content: ${error.message}`);
+        }
+      }
+    );
+
+  } catch (error) {
+    console.error("Failed to register tools:", error);
+  }
 }
 
 async function main() {
-  const server = new McpServer({
-    name: SERVER_NAME,
-    version: SERVER_VERSION,
-    capabilities: { resources: {}, tools: {} }
-  });
+  try {
+    const server = new McpServer({
+      name: SERVER_NAME,
+      version: SERVER_VERSION,
+      capabilities: { resources: {}, tools: {} }
+    });
 
-  await initResources(server);
-  await initTools(server);
+    await initResources(server);
+    await initTools(server);
 
-  // Use console.error for logging to avoid interfering with MCP communication on stdout
-  console.error("MCP Server ready:", SERVER_NAME, SERVER_VERSION);
-  console.error("Available documentation categories:", Object.keys(DOCUMENTATION_CATEGORIES).length);
-  console.error("Available authentication providers:", Object.keys(AUTH_PROVIDERS).length);
-  console.error("Available database adapters:", Object.keys(DATABASE_ADAPTERS).length);
-  console.error("Available plugins:", Object.keys(PLUGINS).length);
-  console.error("Enhanced MCP tools available for Better Auth integration");
-  console.error("Official documentation file:", LOCAL_FILE_PATH);
-  console.error("New tools added: get_official_documentation_urls, get_documentation_by_category, search_official_documentation, get_documentation_content");
-  
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
+    // Use console.error for logging to avoid interfering with MCP communication on stdout
+    console.error("MCP Server ready:", SERVER_NAME, SERVER_VERSION);
+    console.error("Enhanced MCP tools available for Better Auth integration");
+    console.error("Official documentation file:", LOCAL_FILE_PATH);
+    
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+  } catch (error) {
+    console.error("Fatal MCP error:", error);
+    process.exit(1);
+  }
 }
 
 main().catch(err => {

@@ -2,10 +2,7 @@
   "mcpServers": {
     "better-auth": {
       "command": "node",
-      "args": ["E:\\project\\auth\\index.js"],
-      "env": {
-        "NODE_ENV": "production"
-      }
+      "args": ["E:\\project\\auth\\index.js"]
     }
   }
 }
