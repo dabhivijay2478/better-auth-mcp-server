@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import fetch from "node-fetch";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
 
 const SERVER_NAME = "better-auth-comprehensive";
 const SERVER_VERSION = "4.0.0";
@@ -1183,16 +1184,9 @@ async function initTools(server) {
         uri: "tool://better-auth/get_auth_provider_config",
         title: "Get Authentication Provider Configuration",
         description: "Get detailed configuration and setup instructions for a specific authentication provider",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            provider_name: { 
-              type: "string",
-              description: "Name of the authentication provider to get configuration for"
-            }
-          },
-          required: ["provider_name"]
-        }
+        inputSchema: z.object({
+          provider_name: z.string().describe("Name of the authentication provider to get configuration for")
+        })
       },
       async ({ provider_name }) => {
         try {
@@ -1234,16 +1228,9 @@ async function initTools(server) {
         uri: "tool://better-auth/get_database_adapter_config",
         title: "Get Database Adapter Configuration",
         description: "Get detailed configuration and setup instructions for a specific database adapter",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            adapter_name: { 
-              type: "string",
-              description: "Name of the database adapter to get configuration for"
-            }
-          },
-          required: ["adapter_name"]
-        }
+        inputSchema: z.object({
+          adapter_name: z.string().describe("Name of the database adapter to get configuration for")
+        })
       },
       async ({ adapter_name }) => {
         try {
@@ -1283,16 +1270,9 @@ async function initTools(server) {
         uri: "tool://better-auth/get_plugin_config",
         title: "Get Plugin Configuration",
         description: "Get detailed configuration and setup instructions for a specific plugin",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            plugin_name: { 
-              type: "string",
-              description: "Name of the plugin to get configuration for"
-            }
-          },
-          required: ["plugin_name"]
-        }
+        inputSchema: z.object({
+          plugin_name: z.string().describe("Name of the plugin to get configuration for")
+        })
       },
       async ({ plugin_name }) => {
         try {
@@ -1332,26 +1312,11 @@ async function initTools(server) {
         uri: "tool://better-auth/generate_auth_config",
         title: "Generate Complete Better Auth Configuration",
         description: "Generate a complete Better Auth configuration with specified providers, adapters, and plugins",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            providers: { 
-              type: "array",
-              items: { type: "string" },
-              description: "List of authentication providers to include"
-            },
-            adapter: { 
-              type: "string",
-              description: "Database adapter to use"
-            },
-            plugins: { 
-              type: "array",
-              items: { type: "string" },
-              description: "List of plugins to include"
-            }
-          },
-          required: ["providers", "adapter", "plugins"]
-        }
+        inputSchema: z.object({
+          providers: z.array(z.string()).describe("List of authentication providers to include"),
+          adapter: z.string().describe("Database adapter to use"),
+          plugins: z.array(z.string()).describe("List of plugins to include")
+        })
       },
       async ({ providers, adapter, plugins }) => {
         try {
@@ -1407,16 +1372,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/validate_auth_setup",
         title: "Validate Better Auth Setup",
         description: "Validate a Better Auth configuration and provide recommendations",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            config: { 
-              type: "string",
-              description: "Better Auth configuration to validate"
-            }
-          },
-          required: ["config"]
-        }
+        inputSchema: z.object({
+          config: z.string().describe("Better Auth configuration to validate")
+        })
       },
       async ({ config }) => {
         try {
@@ -1443,16 +1401,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_provider_documentation",
         title: "Get Provider Documentation",
         description: "Get documentation URL and setup instructions for a specific provider",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            provider_name: { 
-              type: "string",
-              description: "Name of the authentication provider"
-            }
-          },
-          required: ["provider_name"]
-        }
+        inputSchema: z.object({
+          provider_name: z.string().describe("Name of the authentication provider")
+        })
       },
       async ({ provider_name }) => {
         try {
@@ -1487,10 +1438,7 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_documentation_categories",
         title: "Get Documentation Categories",
         description: "Returns all available Better Auth documentation categories",
-        inputSchema: { 
-          type: "object",
-          properties: {}
-        }
+        inputSchema: z.object({})
       },
       async () => {
         try {
@@ -1514,16 +1462,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_documentation_urls",
         title: "Get Documentation URLs by Category",
         description: "Get all documentation URLs for a specific category",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            category: { 
-              type: "string",
-              description: "Documentation category to get URLs for"
-            }
-          },
-          required: ["category"]
-        }
+        inputSchema: z.object({
+          category: z.string().describe("Documentation category to get URLs for")
+        })
       },
       async ({ category }) => {
         try {
@@ -1550,16 +1491,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/search_documentation",
         title: "Search Documentation",
         description: "Search for documentation pages by keyword",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            query: { 
-              type: "string",
-              description: "Search query to find documentation"
-            }
-          },
-          required: ["query"]
-        }
+        inputSchema: z.object({
+          query: z.string().describe("Search query to find documentation")
+        })
       },
       async ({ query }) => {
         try {
@@ -1581,16 +1515,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/search_official_documentation",
         title: "Search Official Documentation Content",
         description: "Search for specific content within the official better-auth.txt documentation file",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            search_term: { 
-              type: "string",
-              description: "Search term to find in documentation"
-            }
-          },
-          required: ["search_term"]
-        }
+        inputSchema: z.object({
+          search_term: z.string().describe("Search term to find in documentation")
+        })
       },
       async ({ search_term }) => {
         try {
@@ -1614,10 +1541,7 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_all_auth_providers",
         title: "Get All Authentication Providers",
         description: "Returns all available Better Auth authentication providers",
-        inputSchema: { 
-          type: "object",
-          properties: {}
-        }
+        inputSchema: z.object({})
       },
       async () => {
         try {
@@ -1640,16 +1564,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_auth_provider_details",
         title: "Get Authentication Provider Details",
         description: "Get detailed configuration for a specific authentication provider",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            provider_key: { 
-              type: "string",
-              description: "Key of the authentication provider to get details for"
-            }
-          },
-          required: ["provider_key"]
-        }
+        inputSchema: z.object({
+          provider_key: z.string().describe("Key of the authentication provider to get details for")
+        })
       },
       async ({ provider_key }) => {
         try {
@@ -1678,16 +1595,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_providers_by_category",
         title: "Get Providers by Category",
         description: "Get authentication providers filtered by category",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            category: { 
-              type: "string",
-              description: "Category to filter providers by"
-            }
-          },
-          required: ["category"]
-        }
+        inputSchema: z.object({
+          category: z.string().describe("Category to filter providers by")
+        })
       },
       async ({ category }) => {
         try {
@@ -1710,10 +1620,7 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_all_database_adapters",
         title: "Get All Database Adapters",
         description: "Returns all available Better Auth database adapters",
-        inputSchema: { 
-          type: "object",
-          properties: {}
-        }
+        inputSchema: z.object({})
       },
       async () => {
         try {
@@ -1736,16 +1643,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_database_adapter_details",
         title: "Get Database Adapter Details",
         description: "Get detailed configuration for a specific database adapter",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            adapter_key: { 
-              type: "string",
-              description: "Key of the database adapter to get details for"
-            }
-          },
-          required: ["adapter_key"]
-        }
+        inputSchema: z.object({
+          adapter_key: z.string().describe("Key of the database adapter to get details for")
+        })
       },
       async ({ adapter_key }) => {
         try {
@@ -1776,10 +1676,7 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_all_plugins",
         title: "Get All Plugins",
         description: "Returns all available Better Auth plugins",
-        inputSchema: { 
-          type: "object",
-          properties: {}
-        }
+        inputSchema: z.object({})
       },
       async () => {
         try {
@@ -1802,16 +1699,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_plugin_details",
         title: "Get Plugin Details",
         description: "Get detailed configuration for a specific plugin",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            plugin_key: { 
-              type: "string",
-              description: "Key of the plugin to get details for"
-            }
-          },
-          required: ["plugin_key"]
-        }
+        inputSchema: z.object({
+          plugin_key: z.string().describe("Key of the plugin to get details for")
+        })
       },
       async ({ plugin_key }) => {
         try {
@@ -1841,16 +1731,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_plugins_by_category",
         title: "Get Plugins by Category",
         description: "Get plugins filtered by category",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            category: { 
-              type: "string",
-              description: "Category to filter plugins by"
-            }
-          },
-          required: ["category"]
-        }
+        inputSchema: z.object({
+          category: z.string().describe("Category to filter plugins by")
+        })
       },
       async ({ category }) => {
         try {
@@ -1873,26 +1756,11 @@ export const auth = betterAuth({
         uri: "tool://better-auth/generate_better_auth_config",
         title: "Generate Better Auth Configuration",
         description: "Generate a complete Better Auth configuration with specified providers, adapters, and plugins",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            providers: { 
-              type: "array",
-              items: { type: "string" },
-              description: "List of authentication providers to include"
-            },
-            adapter: { 
-              type: "string",
-              description: "Database adapter to use"
-            },
-            plugins: { 
-              type: "array",
-              items: { type: "string" },
-              description: "List of plugins to include"
-            }
-          },
-          required: ["providers", "adapter", "plugins"]
-        }
+        inputSchema: z.object({
+          providers: z.array(z.string()).describe("List of authentication providers to include"),
+          adapter: z.string().describe("Database adapter to use"),
+          plugins: z.array(z.string()).describe("List of plugins to include")
+        })
       },
       async ({ providers, adapter, plugins }) => {
         try {
@@ -1946,16 +1814,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_provider_setup_guide",
         title: "Get Provider Setup Guide",
         description: "Get setup instructions for a specific authentication provider",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            provider_name: { 
-              type: "string",
-              description: "Name of the authentication provider"
-            }
-          },
-          required: ["provider_name"]
-        }
+        inputSchema: z.object({
+          provider_name: z.string().describe("Name of the authentication provider")
+        })
       },
       async ({ provider_name }) => {
         try {
@@ -1990,10 +1851,7 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_official_documentation_urls",
         title: "Get Official Better Auth Documentation URLs",
         description: "Parse and return all documentation URLs from the official better-auth.txt documentation file",
-        inputSchema: { 
-          type: "object",
-          properties: {}
-        }
+        inputSchema: z.object({})
       },
       async () => {
         try {
@@ -2022,16 +1880,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_documentation_by_category",
         title: "Get Documentation URLs by Category",
         description: "Get all documentation URLs for a specific category from the official better-auth.txt file",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            category: { 
-              type: "string",
-              description: "Documentation category to get URLs for"
-            }
-          },
-          required: ["category"]
-        }
+        inputSchema: z.object({
+          category: z.string().describe("Documentation category to get URLs for")
+        })
       },
       async ({ category }) => {
         try {
@@ -2057,10 +1908,7 @@ export const auth = betterAuth({
         uri: "tool://better-auth/fetch_list",
         title: "Get Better Auth Documentation URLs",
         description: "Returns an array of URLs listed in better-auth.txt",
-        inputSchema: { 
-          type: "object",
-          properties: {}
-        }
+        inputSchema: z.object({})
       },
       async () => {
         try {
@@ -2078,16 +1926,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/fetch_page",
         title: "Fetch Better Auth Documentation Page",
         description: "Fetch content from allowed better-auth.com URL",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            url: { 
-              type: "string",
-              description: "URL to fetch content from"
-            }
-          },
-          required: ["url"]
-        }
+        inputSchema: z.object({
+          url: z.string().describe("URL to fetch content from")
+        })
       },
       async ({ url }) => {
         try {
@@ -2105,16 +1946,9 @@ export const auth = betterAuth({
         uri: "tool://better-auth/get_documentation_content",
         title: "Get Documentation Content from Official File",
         description: "Get the full content of a specific documentation page from the official better-auth.txt file",
-        inputSchema: { 
-          type: "object",
-          properties: {
-            page_url: { 
-              type: "string",
-              description: "URL of the documentation page to get content for"
-            }
-          },
-          required: ["page_url"]
-        }
+        inputSchema: z.object({
+          page_url: z.string().describe("URL of the documentation page to get content for")
+        })
       },
       async ({ page_url }) => {
         try {
