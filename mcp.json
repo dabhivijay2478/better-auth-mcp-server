@@ -2,7 +2,7 @@
   "mcpServers": {
     "better-auth": {
       "command": "node",
-      "args": ["E:\\project\\auth\\index.js"]
+      "args": ["E:\\project\\auth\\dist\\index.js"]
     }
   }
 }
