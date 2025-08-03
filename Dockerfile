@@ -10,5 +10,8 @@ RUN npm install --ignore-scripts
 # Copy application code
 COPY . .
 
+# Build TypeScript project
+RUN npm run build
+
 # Default command to start the MCP server
-CMD ["node", "index.js"]
+CMD ["node", "dist/index.js"]
