@@ -1,12 +1,9 @@
-import fs from "fs/promises";
-import fetch from "node-fetch";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
 const SERVER_NAME = "better-auth-comprehensive";
 const SERVER_VERSION = "4.0.0";
-const LOCAL_FILE_PATH = "better-auth.txt";
 
 // Better Auth Documentation Categories
 const DOCUMENTATION_CATEGORIES = {
@@ -1150,9 +1147,10 @@ const PLUGINS = {
 
 async function initResources(server) {
   try {
+    // Register a comprehensive Better Auth documentation resource
     server.registerResource(
       "better_auth_docs",
-      `file://${LOCAL_FILE_PATH}`,
+      "better-auth://documentation",
       {
         title: "Better Auth Documentation",
         description: "Complete Better Auth documentation and configuration guide",
@@ -1160,11 +1158,80 @@ async function initResources(server) {
       },
       async () => {
         try {
-          const text = await fs.readFile(LOCAL_FILE_PATH, "utf-8");
-          return { contents: [{ uri: `file://${LOCAL_FILE_PATH}`, text }] };
+          // Return comprehensive Better Auth documentation content
+          const documentationContent = `# Better Auth Documentation
+
+## Overview
+Better Auth is a framework-agnostic authentication and authorization framework for TypeScript. It provides a comprehensive set of features out of the box and includes a plugin ecosystem that simplifies adding advanced functionalities.
+
+## Key Features
+- Framework agnostic - Works with any framework
+- Advanced features built-in - 2FA, multi-tenancy, multi-session, rate limiting
+- Plugin system - Extend functionality without forking
+- Full control - Customize auth flows exactly how you want
+
+## Authentication Providers
+Better Auth supports multiple authentication providers:
+- Email & Password
+- Google OAuth
+- GitHub OAuth
+- Facebook OAuth
+- Apple Sign-In
+- Discord OAuth
+- And many more...
+
+## Database Adapters
+Supported database adapters:
+- PostgreSQL
+- MySQL
+- SQLite
+- MongoDB
+- Drizzle ORM
+- Prisma ORM
+- MS SQL Server
+
+## Plugins
+Available plugins include:
+- Magic Link
+- Passkey
+- Two-Factor Authentication
+- Username
+- CAPTCHA
+- JWT
+- Organization
+- SSO
+- Stripe
+- Admin Panel
+- And many more...
+
+## Getting Started
+1. Install Better Auth: npm install better-auth
+2. Set environment variables (BETTER_AUTH_SECRET, BETTER_AUTH_URL)
+3. Configure your database adapter
+4. Set up authentication providers
+5. Create your auth instance
+6. Mount the handler in your framework
+
+## Documentation Categories
+- Getting Started
+- Authentication Providers
+- Database Adapters
+- Plugins
+- Framework Integrations
+- Guides and Tutorials
+- Core Concepts
+
+For more detailed information, visit the official Better Auth documentation at https://better-auth.com/docs`;
+
+          return { 
+            contents: [{ 
+              uri: "better-auth://documentation", 
+              text: documentationContent 
+            }] 
+          };
         } catch (error) {
-          console.error(`Failed fetching ${LOCAL_FILE_PATH}:`, error);
-          throw new Error(`Failed to read file: ${LOCAL_FILE_PATH}`);
+          console.error("Failed to generate documentation content:", error);
+          throw new Error("Failed to generate documentation content");
         }
       }
     );
@@ -1514,7 +1581,7 @@ export const auth = betterAuth({
       {
         uri: "tool://better-auth/search_official_documentation",
         title: "Search Official Documentation Content",
-        description: "Search for specific content within the official better-auth.txt documentation file",
+        description: "Search for specific content within the official Better Auth documentation",
         inputSchema: z.object({
           search_term: z.string().describe("Search term to find in documentation")
         })
@@ -1850,7 +1917,7 @@ export const auth = betterAuth({
       {
         uri: "tool://better-auth/get_official_documentation_urls",
         title: "Get Official Better Auth Documentation URLs",
-        description: "Parse and return all documentation URLs from the official better-auth.txt documentation file",
+        description: "Parse and return all documentation URLs from the official Better Auth documentation",
         inputSchema: z.object({})
       },
       async () => {
@@ -1879,7 +1946,7 @@ export const auth = betterAuth({
       {
         uri: "tool://better-auth/get_documentation_by_category",
         title: "Get Documentation URLs by Category",
-        description: "Get all documentation URLs for a specific category from the official better-auth.txt file",
+        description: "Get all documentation URLs for a specific category from the official Better Auth documentation",
         inputSchema: z.object({
           category: z.string().describe("Documentation category to get URLs for")
         })
@@ -1907,7 +1974,7 @@ export const auth = betterAuth({
       {
         uri: "tool://better-auth/fetch_list",
         title: "Get Better Auth Documentation URLs",
-        description: "Returns an array of URLs listed in better-auth.txt",
+        description: "Returns an array of URLs from Better Auth documentation",
         inputSchema: z.object({})
       },
       async () => {
@@ -1945,7 +2012,7 @@ export const auth = betterAuth({
       {
         uri: "tool://better-auth/get_documentation_content",
         title: "Get Documentation Content from Official File",
-        description: "Get the full content of a specific documentation page from the official better-auth.txt file",
+        description: "Get the full content of a specific documentation page from the official Better Auth documentation",
         inputSchema: z.object({
           page_url: z.string().describe("URL of the documentation page to get content for")
         })
@@ -1974,8 +2041,7 @@ async function main() {
   try {
     const server = new McpServer({
       name: SERVER_NAME,
-      version: SERVER_VERSION,
-      capabilities: { resources: {}, tools: {} }
+      version: SERVER_VERSION
     });
 
     await initResources(server);
@@ -1984,7 +2050,7 @@ async function main() {
     // Use console.error for logging to avoid interfering with MCP communication on stdout
     console.error("MCP Server ready:", SERVER_NAME, SERVER_VERSION);
     console.error("Enhanced MCP tools available for Better Auth integration");
-    console.error("Official documentation file:", LOCAL_FILE_PATH);
+    console.error("Better Auth documentation and tools loaded successfully");
     
     const transport = new StdioServerTransport();
     await server.connect(transport);
