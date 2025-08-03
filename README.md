@@ -1,4 +1,5 @@
 # Better Auth MCP Server
+[![smithery badge](https://smithery.ai/badge/@dabhivijay2478/auth)](https://smithery.ai/server/@dabhivijay2478/auth)
 
 A comprehensive Model Context Protocol (MCP) server that provides tools for all Better Auth authentication providers, database adapters, and plugins.
 
@@ -169,6 +170,15 @@ console.log(docs.setupSteps);
 
 ## Installation
 
+### Installing via Smithery
+
+To install auth for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@dabhivijay2478/auth):
+
+```bash
+npx -y @smithery/cli install @dabhivijay2478/auth --client claude
+```
+
+### Installing Manually
 1. Install dependencies:
 ```bash
 npm install
