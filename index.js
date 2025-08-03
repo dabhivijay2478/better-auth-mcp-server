@@ -1186,12 +1186,15 @@ async function initTools(server) {
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            provider_name: { 
+              type: "string",
+              description: "Name of the authentication provider to get configuration for"
+            }
           },
-          required: ["random_string"]
+          required: ["provider_name"]
         }
       },
-      async ({ random_string }) => {
+      async ({ provider_name }) => {
         try {
           // Return a sample provider config for demonstration
           return {
@@ -1234,12 +1237,15 @@ async function initTools(server) {
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            adapter_name: { 
+              type: "string",
+              description: "Name of the database adapter to get configuration for"
+            }
           },
-          required: ["random_string"]
+          required: ["adapter_name"]
         }
       },
-      async ({ random_string }) => {
+      async ({ adapter_name }) => {
         try {
           return {
             adapter: "postgresql",
@@ -1280,12 +1286,15 @@ async function initTools(server) {
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            plugin_name: { 
+              type: "string",
+              description: "Name of the plugin to get configuration for"
+            }
           },
-          required: ["random_string"]
+          required: ["plugin_name"]
         }
       },
-      async ({ random_string }) => {
+      async ({ plugin_name }) => {
         try {
           return {
             plugin: "magic_link",
@@ -1326,12 +1335,25 @@ async function initTools(server) {
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            providers: { 
+              type: "array",
+              items: { type: "string" },
+              description: "List of authentication providers to include"
+            },
+            adapter: { 
+              type: "string",
+              description: "Database adapter to use"
+            },
+            plugins: { 
+              type: "array",
+              items: { type: "string" },
+              description: "List of plugins to include"
+            }
           },
-          required: ["random_string"]
+          required: ["providers", "adapter", "plugins"]
         }
       },
-      async ({ random_string }) => {
+      async ({ providers, adapter, plugins }) => {
         try {
           const config = `import { betterAuth } from "better-auth";
 
@@ -1388,12 +1410,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            config: { 
+              type: "string",
+              description: "Better Auth configuration to validate"
+            }
           },
-          required: ["random_string"]
+          required: ["config"]
         }
       },
-      async ({ random_string }) => {
+      async ({ config }) => {
         try {
           return {
             valid: true,
@@ -1421,12 +1446,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            provider_name: { 
+              type: "string",
+              description: "Name of the authentication provider"
+            }
           },
-          required: ["random_string"]
+          required: ["provider_name"]
         }
       },
-      async ({ random_string }) => {
+      async ({ provider_name }) => {
         try {
           return {
             provider: "google",
@@ -1461,13 +1489,10 @@ export const auth = betterAuth({
         description: "Returns all available Better Auth documentation categories",
         inputSchema: { 
           type: "object",
-          properties: {
-            random_string: { type: "string" }
-          },
-          required: ["random_string"]
+          properties: {}
         }
       },
-      async ({ random_string }) => {
+      async () => {
         try {
           const categories = [
             { key: "getting_started", name: "Getting Started", description: "Basic setup and introduction to Better Auth", urlCount: 4 },
@@ -1492,12 +1517,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            category: { 
+              type: "string",
+              description: "Documentation category to get URLs for"
+            }
           },
-          required: ["random_string"]
+          required: ["category"]
         }
       },
-      async ({ random_string }) => {
+      async ({ category }) => {
         try {
           return {
             category: "authentication_providers",
@@ -1525,12 +1553,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            query: { 
+              type: "string",
+              description: "Search query to find documentation"
+            }
           },
-          required: ["random_string"]
+          required: ["query"]
         }
       },
-      async ({ random_string }) => {
+      async ({ query }) => {
         try {
           return { 
             results: [
@@ -1553,12 +1584,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            search_term: { 
+              type: "string",
+              description: "Search term to find in documentation"
+            }
           },
-          required: ["random_string"]
+          required: ["search_term"]
         }
       },
-      async ({ random_string }) => {
+      async ({ search_term }) => {
         try {
           return { 
             results: [
@@ -1582,13 +1616,10 @@ export const auth = betterAuth({
         description: "Returns all available Better Auth authentication providers",
         inputSchema: { 
           type: "object",
-          properties: {
-            random_string: { type: "string" }
-          },
-          required: ["random_string"]
+          properties: {}
         }
       },
-      async ({ random_string }) => {
+      async () => {
         try {
           const providers = [
             { key: "google", name: "Google OAuth", description: "Google OAuth 2.0 authentication with refresh tokens", category: "social" },
@@ -1612,12 +1643,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            provider_key: { 
+              type: "string",
+              description: "Key of the authentication provider to get details for"
+            }
           },
-          required: ["random_string"]
+          required: ["provider_key"]
         }
       },
-      async ({ random_string }) => {
+      async ({ provider_key }) => {
         try {
           return {
             provider: "google",
@@ -1647,12 +1681,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            category: { 
+              type: "string",
+              description: "Category to filter providers by"
+            }
           },
-          required: ["random_string"]
+          required: ["category"]
         }
       },
-      async ({ random_string }) => {
+      async ({ category }) => {
         try {
           const providers = [
             { key: "google", name: "Google OAuth", description: "Google OAuth 2.0 authentication with refresh tokens" },
@@ -1675,13 +1712,10 @@ export const auth = betterAuth({
         description: "Returns all available Better Auth database adapters",
         inputSchema: { 
           type: "object",
-          properties: {
-            random_string: { type: "string" }
-          },
-          required: ["random_string"]
+          properties: {}
         }
       },
-      async ({ random_string }) => {
+      async () => {
         try {
           const adapters = [
             { key: "postgresql", name: "PostgreSQL", description: "PostgreSQL database adapter with connection pooling" },
@@ -1705,12 +1739,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            adapter_key: { 
+              type: "string",
+              description: "Key of the database adapter to get details for"
+            }
           },
-          required: ["random_string"]
+          required: ["adapter_key"]
         }
       },
-      async ({ random_string }) => {
+      async ({ adapter_key }) => {
         try {
           return {
             adapter: "postgresql",
@@ -1741,13 +1778,10 @@ export const auth = betterAuth({
         description: "Returns all available Better Auth plugins",
         inputSchema: { 
           type: "object",
-          properties: {
-            random_string: { type: "string" }
-          },
-          required: ["random_string"]
+          properties: {}
         }
       },
-      async ({ random_string }) => {
+      async () => {
         try {
           const plugins = [
             { key: "magic_link", name: "Magic Link", description: "Passwordless authentication via email links", category: "security" },
@@ -1771,12 +1805,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            plugin_key: { 
+              type: "string",
+              description: "Key of the plugin to get details for"
+            }
           },
-          required: ["random_string"]
+          required: ["plugin_key"]
         }
       },
-      async ({ random_string }) => {
+      async ({ plugin_key }) => {
         try {
           return {
             plugin: "magic_link",
@@ -1807,12 +1844,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            category: { 
+              type: "string",
+              description: "Category to filter plugins by"
+            }
           },
-          required: ["random_string"]
+          required: ["category"]
         }
       },
-      async ({ random_string }) => {
+      async ({ category }) => {
         try {
           const plugins = [
             { key: "magic_link", name: "Magic Link", description: "Passwordless authentication via email links" },
@@ -1836,12 +1876,25 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            providers: { 
+              type: "array",
+              items: { type: "string" },
+              description: "List of authentication providers to include"
+            },
+            adapter: { 
+              type: "string",
+              description: "Database adapter to use"
+            },
+            plugins: { 
+              type: "array",
+              items: { type: "string" },
+              description: "List of plugins to include"
+            }
           },
-          required: ["random_string"]
+          required: ["providers", "adapter", "plugins"]
         }
       },
-      async ({ random_string }) => {
+      async ({ providers, adapter, plugins }) => {
         try {
           const config = `import { betterAuth } from "better-auth";
 
@@ -1896,12 +1949,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            provider_name: { 
+              type: "string",
+              description: "Name of the authentication provider"
+            }
           },
-          required: ["random_string"]
+          required: ["provider_name"]
         }
       },
-      async ({ random_string }) => {
+      async ({ provider_name }) => {
         try {
           return {
             provider: "google",
@@ -1936,13 +1992,10 @@ export const auth = betterAuth({
         description: "Parse and return all documentation URLs from the official better-auth.txt documentation file",
         inputSchema: { 
           type: "object",
-          properties: {
-            random_string: { type: "string" }
-          },
-          required: ["random_string"]
+          properties: {}
         }
       },
-      async ({ random_string }) => {
+      async () => {
         try {
           return { 
             urls: [
@@ -1972,12 +2025,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            category: { 
+              type: "string",
+              description: "Documentation category to get URLs for"
+            }
           },
-          required: ["random_string"]
+          required: ["category"]
         }
       },
-      async ({ random_string }) => {
+      async ({ category }) => {
         try {
           return { 
             category: "authentication", 
@@ -2003,13 +2059,10 @@ export const auth = betterAuth({
         description: "Returns an array of URLs listed in better-auth.txt",
         inputSchema: { 
           type: "object",
-          properties: {
-            random_string: { type: "string" }
-          },
-          required: ["random_string"]
+          properties: {}
         }
       },
-      async ({ random_string }) => {
+      async () => {
         try {
           return { urls: ["/docs/authentication/google", "/docs/authentication/github"] };
         } catch (error) {
@@ -2028,12 +2081,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            url: { 
+              type: "string",
+              description: "URL to fetch content from"
+            }
           },
-          required: ["random_string"]
+          required: ["url"]
         }
       },
-      async ({ random_string }) => {
+      async ({ url }) => {
         try {
           return { url: "https://example.com", content: "Sample documentation content" };
         } catch (error) {
@@ -2052,12 +2108,15 @@ export const auth = betterAuth({
         inputSchema: { 
           type: "object",
           properties: {
-            random_string: { type: "string" }
+            page_url: { 
+              type: "string",
+              description: "URL of the documentation page to get content for"
+            }
           },
-          required: ["random_string"]
+          required: ["page_url"]
         }
       },
-      async ({ random_string }) => {
+      async ({ page_url }) => {
         try {
           return { 
             url: "/docs/authentication/google", 
