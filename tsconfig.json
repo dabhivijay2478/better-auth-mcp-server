@@ -14,7 +14,15 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": [
+      "ES2022"
+    ],
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "src/**/*"
@@ -22,5 +30,9 @@
   "exclude": [
     "node_modules",
     "dist"
-  ]
-} 
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
+}

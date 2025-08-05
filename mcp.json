@@ -2,7 +2,9 @@
   "mcpServers": {
     "better-auth": {
       "command": "node",
-      "args": ["E:\\project\\auth\\dist\\index.js"]
+      "args": [
+        "/Users/vijay.d/Vijay Workspace/auth/dist/index.js"
+      ]
     }
   }
 }
