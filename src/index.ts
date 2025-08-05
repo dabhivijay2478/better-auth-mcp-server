@@ -4,8 +4,8 @@ import { z } from "zod";
 
 declare const process: any;
 
-const SERVER_NAME = "better-auth-comprehensive";
-const SERVER_VERSION = "5.0.0";
+const SERVER_NAME = "better-v-auth";
+const SERVER_VERSION = "1.0.1";
 
 // Documentation Categories from the official docs
 const DOCUMENTATION_CATEGORIES = {
@@ -13,7 +13,7 @@ const DOCUMENTATION_CATEGORIES = {
     name: "Getting Started",
     urls: [
       "/docs/introduction",
-      "/docs/installation", 
+      "/docs/installation",
       "/docs/basic-usage",
       "/docs/comparison"
     ]
@@ -41,7 +41,7 @@ const DOCUMENTATION_CATEGORIES = {
     urls: [
       "/docs/authentication/email-password",
       "/docs/authentication/apple",
-      "/docs/authentication/facebook", 
+      "/docs/authentication/facebook",
       "/docs/authentication/github",
       "/docs/authentication/google",
       "/docs/authentication/microsoft"
@@ -66,7 +66,7 @@ const DOCUMENTATION_CATEGORIES = {
     ]
   },
   "integrations": {
-    name: "Framework Integrations", 
+    name: "Framework Integrations",
     urls: [
       "/docs/integrations/astro",
       "/docs/integrations/expo",
@@ -125,7 +125,7 @@ const AUTH_PROVIDERS = {
     },
     setupSteps: [
       "1. Enable email and password in your auth configuration",
-      "2. Configure email sending for verification emails", 
+      "2. Configure email sending for verification emails",
       "3. Set up password reset functionality",
       "4. Configure password requirements",
       "5. Test sign up and sign in flows"
@@ -148,7 +148,7 @@ export const auth = betterAuth({
 });`
   },
   "apple": {
-    name: "Apple Sign-In", 
+    name: "Apple Sign-In",
     description: "Apple Sign-In authentication with OpenID Connect",
     category: "social",
     config: {
@@ -158,7 +158,7 @@ export const auth = betterAuth({
     },
     setupSteps: [
       "1. Create an App ID in Apple Developer Console",
-      "2. Configure Sign In with Apple capability", 
+      "2. Configure Sign In with Apple capability",
       "3. Create a Services ID for web authentication",
       "4. Generate client secret using private key",
       "5. Add configuration to your auth setup"
@@ -179,7 +179,7 @@ export const auth = betterAuth({
   },
   "microsoft": {
     name: "Microsoft OAuth",
-    description: "Microsoft Azure Entra ID (formerly Active Directory) authentication", 
+    description: "Microsoft Azure Entra ID (formerly Active Directory) authentication",
     category: "social",
     config: {
       clientId: "YOUR_MICROSOFT_CLIENT_ID",
@@ -190,7 +190,7 @@ export const auth = betterAuth({
     setupSteps: [
       "1. Register application in Microsoft Entra ID",
       "2. Configure redirect URIs",
-      "3. Set up API permissions", 
+      "3. Set up API permissions",
       "4. Generate client secret",
       "5. Add configuration to your auth setup"
     ],
@@ -211,7 +211,7 @@ export const auth = betterAuth({
   "facebook": {
     name: "Facebook OAuth",
     description: "Facebook OAuth authentication with user permissions",
-    category: "social", 
+    category: "social",
     config: {
       clientId: "YOUR_FACEBOOK_CLIENT_ID",
       clientSecret: "YOUR_FACEBOOK_CLIENT_SECRET",
@@ -244,12 +244,12 @@ export const auth = betterAuth({
     description: "GitHub OAuth authentication with email scope",
     category: "social",
     config: {
-      clientId: "YOUR_GITHUB_CLIENT_ID", 
+      clientId: "YOUR_GITHUB_CLIENT_ID",
       clientSecret: "YOUR_GITHUB_CLIENT_SECRET"
     },
     setupSteps: [
       "1. Create a new OAuth App in GitHub",
-      "2. Set the Authorization callback URL", 
+      "2. Set the Authorization callback URL",
       "3. Note the Client ID and Client Secret",
       "4. Add configuration to your auth setup",
       "5. Test the authentication flow"
@@ -272,7 +272,7 @@ export const auth = betterAuth({
     category: "social",
     config: {
       clientId: "YOUR_GOOGLE_CLIENT_ID",
-      clientSecret: "YOUR_GOOGLE_CLIENT_SECRET", 
+      clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
       accessType: "offline",
       prompt: "select_account+consent"
     },
@@ -280,7 +280,7 @@ export const auth = betterAuth({
       "1. Create a project in Google Cloud Console",
       "2. Enable Google+ API",
       "3. Create OAuth 2.0 credentials",
-      "4. Configure authorized redirect URIs", 
+      "4. Configure authorized redirect URIs",
       "5. Add credentials to your auth configuration"
     ],
     requiredEnvVars: ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"],
@@ -310,7 +310,7 @@ const DATABASE_ADAPTERS = {
     },
     setupSteps: [
       "1. Install PostgreSQL database",
-      "2. Create a database for your application", 
+      "2. Create a database for your application",
       "3. Install pg package: npm install pg",
       "4. Configure connection string",
       "5. Run database migrations"
@@ -337,7 +337,7 @@ export const auth = betterAuth({
       "1. Install MySQL database",
       "2. Create a database for your application",
       "3. Install mysql2 package: npm install mysql2",
-      "4. Configure connection string", 
+      "4. Configure connection string",
       "5. Run database migrations"
     ],
     requiredPackages: ["mysql2"],
@@ -402,7 +402,7 @@ export const auth = betterAuth({
 });`
   },
   "prisma": {
-    name: "Prisma ORM Adapter", 
+    name: "Prisma ORM Adapter",
     description: "Prisma ORM integration with Better Auth",
     config: {
       provider: "sqlite" // or "mysql", "postgresql"
@@ -410,7 +410,7 @@ export const auth = betterAuth({
     setupSteps: [
       "1. Install and configure Prisma",
       "2. Set up database connection",
-      "3. Configure Prisma adapter", 
+      "3. Configure Prisma adapter",
       "4. Generate schema with Better Auth CLI",
       "5. Run migrations with Prisma"
     ],
@@ -500,7 +500,7 @@ export const auth = betterAuth({
   "magic-link": {
     name: "Magic Link",
     description: "Passwordless authentication via email links",
-    category: "security", 
+    category: "security",
     config: {
       expiresIn: 300,
       disableSignUp: false,
@@ -544,7 +544,7 @@ export const auth = betterAuth({
     },
     setupSteps: [
       "1. Install two-factor plugin",
-      "2. Configure TOTP settings", 
+      "2. Configure TOTP settings",
       "3. Set up QR code generation",
       "4. Configure client-side verification",
       "5. Test 2FA setup and verification"
@@ -568,7 +568,7 @@ export const auth = betterAuth({
     category: "security",
     config: {
       rpName: "Your App",
-      rpID: "localhost", 
+      rpID: "localhost",
       userVerification: "preferred"
     },
     setupSteps: [
@@ -621,7 +621,7 @@ export const auth = betterAuth({
 });`
   },
   "phone-number": {
-    name: "Phone Number Authentication", 
+    name: "Phone Number Authentication",
     description: "SMS-based phone number authentication",
     category: "basic",
     config: {
@@ -657,7 +657,7 @@ export const auth = betterAuth({
   "organization": {
     name: "Organization Management",
     description: "Multi-tenant organization and role management",
-    category: "enterprise", 
+    category: "enterprise",
     config: {
       allowUserToCreateOrganization: true,
       organizationLimit: 5,
@@ -857,7 +857,7 @@ const FRAMEWORK_INTEGRATIONS = {
     setupSteps: [
       "1. Create API route at /api/auth/[...all]/route.ts",
       "2. Use toNextJsHandler for App Router",
-      "3. Set up middleware for route protection", 
+      "3. Set up middleware for route protection",
       "4. Configure client with React hooks",
       "5. Handle server-side session management"
     ],
@@ -885,7 +885,7 @@ export default defineEventHandler((event) => {
 });`
   },
   "astro": {
-    name: "Astro Integration", 
+    name: "Astro Integration",
     description: "Astro integration with multiple frontend framework support",
     setupSteps: [
       "1. Create API route at /pages/api/auth/[...all].ts",
@@ -948,7 +948,7 @@ export async function action({ request }: ActionFunctionArgs) {
     setupSteps: [
       "1. Set up catch-all route for /api/auth/*",
       "2. Use toNodeHandler helper",
-      "3. Configure CORS properly", 
+      "3. Configure CORS properly",
       "4. Handle body parsing correctly",
       "5. Set up session middleware"
     ],
@@ -1132,11 +1132,11 @@ export const auth = betterAuth({
 For detailed documentation, visit: https://better-auth.com/docs
 `;
 
-        return { 
-          contents: [{ 
-            uri: "better-auth://complete-documentation", 
-            text: documentationContent 
-          }] 
+        return {
+          contents: [{
+            uri: "better-auth://complete-documentation",
+            text: documentationContent
+          }]
         };
       }
     );
@@ -1188,10 +1188,10 @@ async function initTools(server: McpServer) {
           if (!categoryData) {
             throw new Error(`Category '${category}' not found`);
           }
-          
+
           return {
             content: [{
-              type: "text", 
+              type: "text",
               text: JSON.stringify({
                 category,
                 name: categoryData.name,
@@ -1238,7 +1238,7 @@ async function initTools(server: McpServer) {
     );
 
     server.registerTool(
-      "get_auth_provider_config", 
+      "get_auth_provider_config",
       {
         title: "Get Authentication Provider Configuration",
         description: "Get detailed configuration and setup instructions for a specific authentication provider",
@@ -1252,7 +1252,7 @@ async function initTools(server: McpServer) {
           if (!provider) {
             throw new Error(`Provider '${provider_name}' not found`);
           }
-          
+
           return {
             content: [{
               type: "text",
@@ -1275,7 +1275,7 @@ async function initTools(server: McpServer) {
     server.registerTool(
       "get_all_database_adapters",
       {
-        title: "Get All Database Adapters", 
+        title: "Get All Database Adapters",
         description: "Returns all available Better Auth database adapters",
         inputSchema: {}
       },
@@ -1286,7 +1286,7 @@ async function initTools(server: McpServer) {
               type: "text",
               text: JSON.stringify({
                 adapters: Object.keys(DATABASE_ADAPTERS),
-                withMigrationSupport: Object.keys(DATABASE_ADAPTERS).filter(key => 
+                withMigrationSupport: Object.keys(DATABASE_ADAPTERS).filter(key =>
                   DATABASE_ADAPTERS[key as keyof typeof DATABASE_ADAPTERS].migrationSupport
                 ),
                 total: Object.keys(DATABASE_ADAPTERS).length
@@ -1315,7 +1315,7 @@ async function initTools(server: McpServer) {
           if (!adapter) {
             throw new Error(`Adapter '${adapter_name}' not found`);
           }
-          
+
           return {
             content: [{
               type: "text",
@@ -1387,7 +1387,7 @@ async function initTools(server: McpServer) {
           if (!plugin) {
             throw new Error(`Plugin '${plugin_name}' not found`);
           }
-          
+
           return {
             content: [{
               type: "text",
@@ -1424,23 +1424,23 @@ async function initTools(server: McpServer) {
           // Validate inputs
           const invalidProviders = providers.filter(p => !AUTH_PROVIDERS[p as keyof typeof AUTH_PROVIDERS]);
           const invalidPlugins = plugins.filter(p => !PLUGINS[p as keyof typeof PLUGINS]);
-          
+
           if (!DATABASE_ADAPTERS[adapter as keyof typeof DATABASE_ADAPTERS]) {
             throw new Error(`Invalid adapter: ${adapter}`);
           }
-          
+
           if (invalidProviders.length > 0) {
             throw new Error(`Invalid providers: ${invalidProviders.join(', ')}`);
           }
-          
+
           if (invalidPlugins.length > 0) {
             throw new Error(`Invalid plugins: ${invalidPlugins.join(', ')}`);
           }
 
           // Generate imports
-          const pluginImports = plugins.length > 0 ? 
+          const pluginImports = plugins.length > 0 ?
             `import { ${plugins.join(', ')} } from "better-auth/plugins";` : '';
-          
+
           const adapterImport = DATABASE_ADAPTERS[adapter as keyof typeof DATABASE_ADAPTERS].requiredPackages.length > 0 ?
             `import { ${DATABASE_ADAPTERS[adapter as keyof typeof DATABASE_ADAPTERS].requiredPackages.join(', ')} } from "${DATABASE_ADAPTERS[adapter as keyof typeof DATABASE_ADAPTERS].requiredPackages[0]}";` : '';
 
@@ -1459,12 +1459,12 @@ export const auth = betterAuth({
   
   ${providers.filter(p => p !== 'email-password').length > 0 ? `socialProviders: {
     ${providers.filter(p => p !== 'email-password').map(provider => {
-      const providerConfig = AUTH_PROVIDERS[provider as keyof typeof AUTH_PROVIDERS];
-      return `${provider}: {
+            const providerConfig = AUTH_PROVIDERS[provider as keyof typeof AUTH_PROVIDERS];
+            return `${provider}: {
       clientId: process.env.${provider.toUpperCase()}_CLIENT_ID!,
       clientSecret: process.env.${provider.toUpperCase()}_CLIENT_SECRET!
     }`;
-    }).join(',\n    ')}
+          }).join(',\n    ')}
   },` : ''}
   
   ${plugins.length > 0 ? `plugins: [
@@ -1479,8 +1479,8 @@ export const auth = betterAuth({
           const clientConfig = framework ? `
 // Client configuration for ${framework}
 import { createAuthClient } from "better-auth/${framework === 'nextjs' ? 'react' : framework}";
-${plugins.filter(p => PLUGINS[p as keyof typeof PLUGINS].clientSetup).length > 0 ? 
-  `import { ${plugins.filter(p => PLUGINS[p as keyof typeof PLUGINS].clientSetup).map(p => `${p}Client`).join(', ')} } from "better-auth/client/plugins";` : ''}
+${plugins.filter(p => PLUGINS[p as keyof typeof PLUGINS].clientSetup).length > 0 ?
+              `import { ${plugins.filter(p => PLUGINS[p as keyof typeof PLUGINS].clientSetup).map(p => `${p}Client`).join(', ')} } from "better-auth/client/plugins";` : ''}
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
@@ -1497,7 +1497,7 @@ export const authClient = createAuthClient({
           ];
 
           // Generate framework-specific handler if specified
-          const frameworkHandler = framework && FRAMEWORK_INTEGRATIONS[framework as keyof typeof FRAMEWORK_INTEGRATIONS] ? 
+          const frameworkHandler = framework && FRAMEWORK_INTEGRATIONS[framework as keyof typeof FRAMEWORK_INTEGRATIONS] ?
             FRAMEWORK_INTEGRATIONS[framework as keyof typeof FRAMEWORK_INTEGRATIONS].codeExample : '';
 
           return {
@@ -1509,7 +1509,7 @@ export const authClient = createAuthClient({
                 frameworkHandler,
                 setupInstructions: [
                   "1. Install Better Auth: npm install better-auth",
-                  "2. Set up your database and configure the adapter", 
+                  "2. Set up your database and configure the adapter",
                   "3. Configure your authentication providers with proper credentials",
                   "4. Set up email configuration for verification emails",
                   "5. Configure environment variables for secrets and API keys",
@@ -1611,7 +1611,7 @@ export const authClient = createAuthClient({
     server.registerTool(
       "get_framework_integration",
       {
-        title: "Get Framework Integration Guide",  
+        title: "Get Framework Integration Guide",
         description: "Get integration guide for a specific framework",
         inputSchema: {
           framework: z.string()
@@ -1623,7 +1623,7 @@ export const authClient = createAuthClient({
           if (!integration) {
             throw new Error(`Framework '${framework}' not found`);
           }
-          
+
           return {
             content: [{
               type: "text",
@@ -1633,7 +1633,7 @@ export const authClient = createAuthClient({
                 docUrl: `/docs/integrations/${framework}`,
                 supportedFeatures: [
                   "Server-side rendering",
-                  "Route protection", 
+                  "Route protection",
                   "Session management",
                   "Cookie handling",
                   "Error handling"
@@ -1686,7 +1686,7 @@ export const auth = betterAuth({
             discoveryEndpoint: "/.well-known/oauth-authorization-server",
             requiredEnvVars: ["BETTER_AUTH_SECRET", "BETTER_AUTH_URL"]
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -1732,7 +1732,7 @@ export default withMcpAuth(
             ],
             sessionAccess: "The session object contains user and session data when authenticated"
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -1776,7 +1776,7 @@ export const GET = oAuthDiscoveryMetadata(auth);`,
               response_types_supported: ["code"]
             }
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -1832,7 +1832,7 @@ const handler = async (req: Request) => {
             },
             returns: "Session object with user and session data, or null if not authenticated"
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -1889,12 +1889,12 @@ export const authClient = createAuthClient({
 });`,
             apiMethods: [
               "listSessions() - Get all user sessions",
-              "revokeSession(token) - Revoke specific session", 
+              "revokeSession(token) - Revoke specific session",
               "revokeOtherSessions() - Revoke all other sessions",
               "revokeSessions() - Revoke all sessions"
             ]
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -1963,7 +1963,7 @@ await authClient.verifyEmail({
 });`,
             requiredEnvVars: ["EMAIL_SERVICE_CONFIG"]
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -1980,7 +1980,7 @@ await authClient.verifyEmail({
     server.registerTool(
       "get_password_reset_config",
       {
-        title: "Get Password Reset Configuration", 
+        title: "Get Password Reset Configuration",
         description: "Get configuration for password reset functionality",
         inputSchema: {}
       },
@@ -2033,7 +2033,7 @@ await authClient.resetPassword({
 });`,
             requiredEnvVars: ["EMAIL_SERVICE_CONFIG"]
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -2116,7 +2116,7 @@ const session = await auth.api.getSession({
               "Multi-device session management"
             ]
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -2244,7 +2244,7 @@ export const auth = betterAuth({
               help: "npx @better-auth/cli --help"
             }
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -2367,7 +2367,7 @@ export const auth = betterAuth({
               integrationTriggers: "Trigger external services on events"
             }
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -2426,7 +2426,7 @@ const { data: session } = authClient.useSession()`
               }
             },
             "clerk": {
-              name: "Clerk to Better Auth", 
+              name: "Clerk to Better Auth",
               description: "Migrate from Clerk to Better Auth",
               steps: [
                 "1. Export users from Clerk dashboard",
@@ -2447,7 +2447,7 @@ await authClient.signIn.email({ email, password })`
             },
             "supabase": {
               name: "Supabase Auth to Better Auth",
-              description: "Migrate from Supabase Auth to Better Auth", 
+              description: "Migrate from Supabase Auth to Better Auth",
               steps: [
                 "1. Connect to your Supabase database",
                 "2. Set up Better Auth with same database",
@@ -2464,12 +2464,12 @@ await authClient.signIn.email({ email, password })`
               }
             }
           };
-          
+
           const migration = migrations[from_solution as keyof typeof migrations];
           if (!migration) {
             throw new Error(`Migration guide for '${from_solution}' not found`);
           }
-          
+
           return {
             content: [{
               type: "text",
@@ -2586,7 +2586,7 @@ const handleSignIn = async () => {
               "Verify callback URLs match provider settings"
             ]
           };
-          
+
           return {
             content: [{
               type: "text",
@@ -2642,7 +2642,7 @@ async function main() {
       get_migration_guide: true,
       get_quick_start_guide: true
     }).length);
-    
+
     const transport = new StdioServerTransport();
     await server.connect(transport);
   } catch (error) {
