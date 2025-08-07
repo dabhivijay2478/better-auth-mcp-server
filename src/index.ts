@@ -1153,16 +1153,21 @@ async function initTools(server: McpServer) {
       {
         title: "Get Documentation Categories",
         description: "Returns all available Better Auth documentation categories",
-        inputSchema: {}
+        inputSchema: {
+          topic: z.string().optional(),
+          question: z.string().optional()
+        }
       },
-      async () => {
+      async ({ topic, question }) => {
         try {
           return {
             content: [{
               type: "text",
               text: JSON.stringify({
                 categories: Object.keys(DOCUMENTATION_CATEGORIES),
-                details: DOCUMENTATION_CATEGORIES
+                details: DOCUMENTATION_CATEGORIES,
+                topic,
+                question
               }, null, 2)
             }]
           };
@@ -1213,9 +1218,12 @@ async function initTools(server: McpServer) {
       {
         title: "Get All Authentication Providers",
         description: "Returns all available Better Auth authentication providers",
-        inputSchema: {}
+        inputSchema: {
+          topic: z.string().optional(),
+          question: z.string().optional()
+        }
       },
-      async () => {
+      async ({ topic, question }) => {
         try {
           return {
             content: [{
@@ -1226,7 +1234,9 @@ async function initTools(server: McpServer) {
                   basic: Object.keys(AUTH_PROVIDERS).filter(key => AUTH_PROVIDERS[key as keyof typeof AUTH_PROVIDERS].category === 'basic'),
                   social: Object.keys(AUTH_PROVIDERS).filter(key => AUTH_PROVIDERS[key as keyof typeof AUTH_PROVIDERS].category === 'social')
                 },
-                total: Object.keys(AUTH_PROVIDERS).length
+                total: Object.keys(AUTH_PROVIDERS).length,
+                topic,
+                question
               }, null, 2)
             }]
           };
@@ -1343,9 +1353,12 @@ async function initTools(server: McpServer) {
       {
         title: "Get All Plugins",
         description: "Returns all available Better Auth plugins",
-        inputSchema: {}
+        inputSchema: {
+          topic: z.string().optional(),
+          question: z.string().optional()
+        }
       },
-      async () => {
+      async ({ topic, question }) => {
         try {
           return {
             content: [{
@@ -1361,7 +1374,9 @@ async function initTools(server: McpServer) {
                   api: Object.keys(PLUGINS).filter(key => PLUGINS[key as keyof typeof PLUGINS].category === 'api')
                 },
                 withClientSetup: Object.keys(PLUGINS).filter(key => PLUGINS[key as keyof typeof PLUGINS].clientSetup),
-                total: Object.keys(PLUGINS).length
+                total: Object.keys(PLUGINS).length,
+                topic,
+                question
               }, null, 2)
             }]
           };
