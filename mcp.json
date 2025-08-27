@@ -3,7 +3,7 @@
     "better-auth": {
       "command": "node",
       "args": [
-        "/Users/vijay.d/Vijay Workspace/auth/dist/index.js"
+        "/Users/vijay.d/Vijay Workspace/Vapps/incomplete/auth/dist/index.js"
       ]
     }
   }
