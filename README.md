@@ -1,6 +1,3 @@
-
-
-````markdown
 # Better Auth MCP Server
 
 [![smithery badge](https://smithery.ai/badge/@dabhivijay2478/auth)](https://smithery.ai/server/@dabhivijay2478/auth)
@@ -160,9 +157,3 @@ MIT License – see LICENSE file
 * [TypeScript Docs](https://www.typescriptlang.org/)
 
 ---
-
-```
-
-Recommendation: Use consistent headings, short bullet lists, and example blocks for clarity.  
-Next step: Add project logo and badges (npm, version, build status) for a more polished README.
-```
